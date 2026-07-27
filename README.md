@@ -7,10 +7,9 @@ The Smart Blood Bank Management System is a JavaFX desktop application supportin
 ## 2. Architecture
 
 ```
-ui/  ──uses──▶  service/  ──uses──▶  model/
-(screens)       (business logic)     (data + rules)
+ui\ux uses -> service/uses ->  model/
+(screens)  (business logic)  (data + rules)
 ```
-
 | Layer | Responsibility | Classes |
 |---|---|---|
 | **model** | Data and rules for a single object | User, Donor, Patient, BloodBag, BloodType, EmergencyLevel |
