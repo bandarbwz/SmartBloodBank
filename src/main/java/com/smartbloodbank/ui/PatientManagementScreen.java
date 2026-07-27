@@ -28,13 +28,27 @@ import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-/** Registers patients, submits their emergency blood requests, and tracks fulfillment status. */
+/**
+ * Shows every registered patient in a table (ID, name, blood type,
+ * ward, units needed, emergency level, and whether their request has
+ * been fulfilled). From here staff can: click "+ Add Patient" to
+ * register a new patient, click "Edit" on a row to change that
+ * patient's details, select a row and click "Submit Emergency Request"
+ * to put them in the emergency queue, or select a row and click
+ * "Delete Selected" to remove a patient. Adding/editing calls
+ * BloodBank.addPatient(), and submitting a request calls
+ * EmergencyRequest.submitRequest() so the patient shows up on the
+ * Emergency Requests screen.
+ *
+ * Registers patients, submits their emergency blood requests, and tracks fulfillment status.
+ */
 public class PatientManagementScreen extends Screen {
 
     private Label countLabel;
     private VBox formContainer;
     private TableView<Patient> table;
 
+    /** Builds the patient management screen for the given shared app data. */
     public PatientManagementScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
     }
