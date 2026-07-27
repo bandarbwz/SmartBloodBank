@@ -20,6 +20,18 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 
 /**
+ * Shows every patient still waiting for blood as a list of cards,
+ * most urgent first, with a details panel on the right for whichever
+ * card is clicked. That panel shows the patient's info plus the
+ * compatible blood bags available for them. Each card has a "Fulfill
+ * (FIFO)" button, which reserves the oldest matching stock for that
+ * patient, and a "Remove" button, which takes them out of the queue.
+ * The waiting list itself comes from
+ * EmergencyRequest.getPendingRequestsSorted(), the compatible-bags list
+ * comes from BloodMatcher.findCompatibleBags(), and clicking Fulfill
+ * calls BloodMatcher.matchAndReserve() followed by
+ * EmergencyRequest.removeRequest().
+ *
  * Patients waiting for blood, ordered by urgency, with a detail panel
  * showing real FIFO-matched compatible bags for whichever request is
  * selected. Fulfilling reserves real stock via BloodMatcher; there is no
@@ -34,6 +46,7 @@ public class EmergencyRequestScreen extends Screen {
     private Label chipsRow;
     private Patient selectedPatient;
 
+    /** Builds the emergency requests screen for the given shared app data. */
     public EmergencyRequestScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
     }
