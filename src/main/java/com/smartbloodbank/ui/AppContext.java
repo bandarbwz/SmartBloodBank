@@ -11,10 +11,11 @@ import com.smartbloodbank.service.InventoryManager;
 import java.io.IOException;
 
 /**
- * Holds the single shared instance of every service class for the
- * lifetime of the application, and drives loading/saving through
- * FileManager. Passed down to every screen so they all operate on the
- * same underlying data.
+ * Sets up and holds one shared copy of every service class (BloodBank,
+ * InventoryManager, etc.) for as long as the app is running, and is
+ * responsible for loading data in when the app starts and saving it
+ * back out when it closes. Every screen is given this same AppContext
+ * so they're all reading and writing the same underlying data.
  */
 public class AppContext {
 
@@ -40,6 +41,13 @@ public class AppContext {
         return emergencyRequest;
     }
 
+    /**
+     * Loads saved donors/patients/blood bags from disk (via FileManager), or —
+     * if this is a brand-new install with nothing saved yet — fills the app
+     * with sample data (via DemoDataSeeder) instead. Also refreshes expired
+     * bags and re-queues any unfulfilled patients into the emergency request
+     * line, so everything is consistent as soon as the app opens.
+     */
     public void loadData() {
         try {
             fileManager.loadAll(bloodBank);
@@ -59,6 +67,7 @@ public class AppContext {
         }
     }
 
+    /** Writes the current donors/patients/blood bags out to disk (via FileManager), e.g. on app exit or Log Out. */
     public void saveData() {
         try {
             fileManager.saveAll(bloodBank);
