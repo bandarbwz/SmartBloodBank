@@ -22,12 +22,24 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-/** Read-only reporting: real donation/fulfillment/stock metrics computed from the service layer, no fabricated data. */
+/**
+ * A read-only summary of how the blood bank is doing overall: four
+ * headline numbers (total donations, patients fulfilled, bags in
+ * stock, expired bags), a bar chart of donations collected over the
+ * last 6 months, a fulfilled-vs-pending breakdown, and a bar list of
+ * stock per blood type. There's nothing to click here — every number
+ * is calculated on the spot from BloodBank (donors, patients, blood
+ * bags) and InventoryManager (expiry handling), so the report always
+ * reflects the real current data.
+ *
+ * Read-only reporting: real donation/fulfillment/stock metrics computed from the service layer, no fabricated data.
+ */
 public class ReportsScreen extends Screen {
 
     private static final int MONTHS_SHOWN = 6;
     private static final double CHART_MAX_HEIGHT = 130;
 
+    /** Builds the reports screen for the given shared app data. */
     public ReportsScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
     }
