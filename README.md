@@ -1,4 +1,4 @@
-# Smart Blood Bank Management System — Technical Documentation
+# Smart Blood Bank Management System 
 
 ## 1. Overview
 
