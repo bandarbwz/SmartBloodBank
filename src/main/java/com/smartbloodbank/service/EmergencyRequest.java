@@ -10,6 +10,11 @@ import java.util.PriorityQueue;
 import java.util.Queue;
 
 /**
+ * Keeps a waiting line of patients who still need blood, always ready to
+ * say who should be helped next. Patients don't need to be sorted by
+ * hand — the queue automatically keeps the most urgent patient at the
+ * front.
+ *
  * Queues pending patient requests and works through them in urgency order.
  * ABSTRACTION reuse: ordering comes for free from {@link Patient#compareTo},
  * so this class needs no urgency-comparison logic of its own — a
@@ -20,10 +25,12 @@ public class EmergencyRequest {
     private final Queue<Patient> pendingRequests = new PriorityQueue<>();
     private final BloodMatcher bloodMatcher;
 
+    /** Wires this queue up to the BloodMatcher it should use to check/reserve stock when fulfilling requests. */
     public EmergencyRequest(BloodMatcher bloodMatcher) {
         this.bloodMatcher = bloodMatcher;
     }
 
+    /** Adds a patient to the waiting line, unless their request is already fulfilled. */
     public void submitRequest(Patient patient) {
         if (patient.isFulfilled()) {
             return;
@@ -31,14 +38,17 @@ public class EmergencyRequest {
         pendingRequests.add(patient);
     }
 
+    /** Takes a patient out of the waiting line (e.g. if their request is cancelled); returns true if they were in it. */
     public boolean removeRequest(Patient patient) {
         return pendingRequests.remove(patient);
     }
 
+    /** Looks at the most urgent pending patient without removing them from the queue. */
     public Patient peekNextRequest() {
         return pendingRequests.peek();
     }
 
+    /** How many patients are currently waiting. */
     public int getPendingCount() {
         return pendingRequests.size();
     }
