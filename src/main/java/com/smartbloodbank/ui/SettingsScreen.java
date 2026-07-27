@@ -9,6 +9,14 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
 /**
+ * A simple settings page with three cards: Data Persistence (a "Save
+ * Now" button to write everything to disk immediately, instead of only
+ * on exit), About (app version and demo login info), and Alert
+ * Thresholds (a read-only display of the low-stock and expiry-warning
+ * numbers used elsewhere in the app). Clicking "Save Now" calls
+ * AppContext.saveData(); the threshold numbers come from
+ * InventoryManager.getLowStockThreshold() and getExpiryWarningDays().
+ *
  * Manual data persistence controls, real operating configuration, and
  * basic system information. Deliberately does not include a staff
  * profile, facility info, notification toggles or user-management table
@@ -18,6 +26,7 @@ import javafx.scene.layout.VBox;
  */
 public class SettingsScreen extends Screen {
 
+    /** Builds the settings screen for the given shared app data. */
     public SettingsScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
     }
