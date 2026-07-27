@@ -8,6 +8,11 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
+ * Keeps an eye on the blood stock and warns when something needs
+ * attention — either a blood type is running low, or some bags are
+ * about to expire. It doesn't store the stock itself; it just reads
+ * from BloodBank and reports on it.
+ *
  * Watches the stock held in a {@link BloodBank} and raises low-stock and
  * near-expiry alerts. Kept separate from BloodBank itself so the storage
  * class stays a plain data holder and this class owns the business rules
@@ -20,14 +25,17 @@ public class InventoryManager {
 
     private final BloodBank bloodBank;
 
+    /** Wires this manager up to the BloodBank whose stock it should watch. */
     public InventoryManager(BloodBank bloodBank) {
         this.bloodBank = bloodBank;
     }
 
+    /** The unit count below which a blood type is considered low stock. */
     public int getLowStockThreshold() {
         return LOW_STOCK_THRESHOLD;
     }
 
+    /** How many days before expiry a bag starts showing up in the "expiring soon" alerts. */
     public int getExpiryWarningDays() {
         return EXPIRY_WARNING_DAYS;
     }
@@ -50,6 +58,7 @@ public class InventoryManager {
         return updated;
     }
 
+    /** Lists every blood type whose available stock is below the low-stock threshold. */
     public List<BloodType> getLowStockTypes() {
         List<BloodType> lowStock = new ArrayList<>();
         for (BloodType type : BloodType.values()) {
@@ -60,6 +69,7 @@ public class InventoryManager {
         return lowStock;
     }
 
+    /** Builds a human-readable warning message for each blood type that is running low. */
     public List<String> getLowStockAlerts() {
         List<String> alerts = new ArrayList<>();
         for (BloodType type : getLowStockTypes()) {
@@ -82,6 +92,7 @@ public class InventoryManager {
         return nearingExpiry;
     }
 
+    /** Builds a human-readable warning message for each bag that's about to expire. */
     public List<String> getExpiryAlerts() {
         List<String> alerts = new ArrayList<>();
         for (BloodBag bag : getBagsNearingExpiry()) {
