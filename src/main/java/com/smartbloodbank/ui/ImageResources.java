@@ -5,6 +5,10 @@ import javafx.scene.image.Image;
 import java.io.InputStream;
 
 /**
+ * A small helper used to load image files (like the app logo) so that a
+ * missing or broken image shows up as a clear error message in the log
+ * instead of just silently failing to appear on screen.
+ *
  * Loads image resources from the classpath with explicit failure reporting.
  * A missing or corrupt image resource would otherwise degrade silently
  * (null stream throws deep inside the Image constructor, or a bad decode
