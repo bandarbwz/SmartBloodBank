@@ -3,11 +3,17 @@ package com.smartbloodbank.ui;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
-/** Application entry point: loads saved data, shows the Login screen, and saves on exit. */
+/**
+ * The starting point of the whole application — this is the class Java
+ * actually runs first. It sets up the app's data, opens the window on
+ * the Login screen, and makes sure everything is saved when the app is
+ * closed.
+ */
 public class MainApp extends Application {
 
     private AppContext context;
 
+    /** Called by JavaFX when the app launches: loads saved (or seeded) data and opens the window. */
     @Override
     public void start(Stage primaryStage) {
         context = new AppContext();
@@ -26,6 +32,7 @@ public class MainApp extends Application {
         }
     }
 
+    /** Called by JavaFX when the app is closing: saves the current data so nothing is lost. */
     @Override
     public void stop() {
         if (context != null) {
@@ -33,6 +40,7 @@ public class MainApp extends Application {
         }
     }
 
+    /** The Java entry point — hands control over to JavaFX, which then calls start() above. */
     public static void main(String[] args) {
         launch(args);
     }
