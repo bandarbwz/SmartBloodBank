@@ -9,6 +9,11 @@ import java.util.Comparator;
 import java.util.List;
 
 /**
+ * Figures out which blood bags in stock can safely go to a given
+ * patient, and reserves them when a request is fulfilled. It always
+ * offers the stock closest to expiring first, so nothing goes to waste
+ * that didn't need to.
+ *
  * Finds compatible donor blood for a patient. Reuses the donor/recipient
  * rules already centralized in {@link BloodType#canDonateTo}, so this
  * class only decides ordering and stock selection, not the medical rules
@@ -18,6 +23,7 @@ public class BloodMatcher {
 
     private final BloodBank bloodBank;
 
+    /** Wires this matcher up to the BloodBank it should search for stock in. */
     public BloodMatcher(BloodBank bloodBank) {
         this.bloodBank = bloodBank;
     }
@@ -39,6 +45,7 @@ public class BloodMatcher {
         return matches;
     }
 
+    /** Checks whether there's enough compatible stock on hand to cover the units needed, without reserving anything. */
     public boolean canFulfill(BloodType recipientType, int unitsNeeded) {
         return findCompatibleBags(recipientType).size() >= unitsNeeded;
     }
