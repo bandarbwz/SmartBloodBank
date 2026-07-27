@@ -15,6 +15,16 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
 /**
+ * The very first screen the user sees: a split-panel sign-in page with
+ * the app's branding on the left and a username/password form on the
+ * right. The user can type a username and password and click "Sign In"
+ * (or press Enter); on success they're taken to the Dashboard, and on
+ * failure an error message appears. This screen doesn't call any
+ * service-layer class — it just checks the typed credentials against a
+ * single hard-coded demo login (admin / admin123) and hands off to
+ * ScreenManager, since real staff accounts are out of scope for this
+ * project.
+ *
  * First screen shown when the app launches. Not a real authentication
  * system — just a gate in front of the app shell, using a single demo
  * credential, since staff accounts are out of scope for this project.
@@ -26,6 +36,7 @@ public class LoginScreen extends HBox {
     private static final String VALID_USERNAME = "admin";
     private static final String VALID_PASSWORD = "admin123";
 
+    /** Builds the split-panel login screen (brand panel + sign-in form). */
     public LoginScreen(ScreenManager screenManager) {
         getStyleClass().add("login-root");
 
