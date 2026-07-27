@@ -10,7 +10,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
@@ -44,13 +43,10 @@ public class LoginScreen extends HBox {
     }
 
     private VBox buildBrandPanel() {
-        StackPane badge = new StackPane();
-        badge.getStyleClass().add("login-brand-badge");
         ImageView logoView = new ImageView(ImageResources.load(LoginScreen.class, "images/logo.png"));
         logoView.setFitWidth(80);
         logoView.setFitHeight(80);
         logoView.setPreserveRatio(true);
-        badge.getChildren().add(logoView);
 
         Text smartText = new Text("Smart ");
         smartText.getStyleClass().add("login-brand-title");
@@ -71,7 +67,10 @@ public class LoginScreen extends HBox {
         VBox titleBox = new VBox(6, titleFlow, subtitle);
         titleBox.setAlignment(Pos.CENTER);
 
-        VBox panel = new VBox(24, badge, titleBox, tagline);
+        VBox logoAndTitle = new VBox(8, logoView, titleBox);
+        logoAndTitle.setAlignment(Pos.CENTER);
+
+        VBox panel = new VBox(24, logoAndTitle, tagline);
         panel.getStyleClass().add("login-brand-panel");
         panel.setAlignment(Pos.CENTER);
         panel.setPadding(new Insets(48));

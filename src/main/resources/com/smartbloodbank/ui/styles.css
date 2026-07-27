@@ -595,16 +595,6 @@
     -fx-background-color: #7A1B27;
 }
 
-.login-brand-badge {
-    -fx-background-color: white;
-    -fx-background-radius: 50%;
-    -fx-min-width: 104px;
-    -fx-min-height: 104px;
-    -fx-max-width: 104px;
-    -fx-max-height: 104px;
-    -fx-alignment: CENTER;
-}
-
 .login-brand-title {
     -fx-font-size: 26px;
     -fx-font-weight: bold;
