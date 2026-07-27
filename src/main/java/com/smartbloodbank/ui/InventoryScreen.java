@@ -27,9 +27,21 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/** Tracks every blood bag from donation through to use or expiry, grouped by blood type. */
+/**
+ * Shows the full blood stock, grouped into a section per blood type
+ * (each with its own mini table of bag ID, collected date, expiry
+ * date, days until expiry, donor, and status). A row of 8 summary
+ * cards up top shows the unit count for each type at a glance. From
+ * here staff can click "+ Add Blood Bag" to log a new bag from an
+ * eligible donor, or click "Remove" on any row to delete that bag.
+ * Adding a bag calls BloodBank.addBloodBag() (and Donor.recordDonation()
+ * on the chosen donor); removing calls BloodBank.removeBloodBag().
+ *
+ * Tracks every blood bag from donation through to use or expiry, grouped by blood type.
+ */
 public class InventoryScreen extends Screen {
 
+    /** Builds the blood inventory screen for the given shared app data. */
     public InventoryScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
     }
