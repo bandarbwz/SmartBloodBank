@@ -18,6 +18,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 /**
+ * Handles saving the app's data to disk and loading it back, so nothing
+ * is lost when the app is closed and reopened. Everything is written as
+ * plain text files (one line per donor/patient/blood bag) inside a
+ * "data" folder next to the app.
+ *
  * Saves and loads all BloodBank data to/from plain-text files so state
  * survives between runs. Each entity is written as one delimited line per
  * record; the "load" constructors already provided on the model classes
@@ -35,6 +40,7 @@ public class FileManager {
     private static final String FIELD_SEPARATOR_REGEX = "\\|";
     private static final String LIST_SEPARATOR = ",";
 
+    /** Writes every donor, patient and blood bag from the given BloodBank out to the data files. */
     public void saveAll(BloodBank bloodBank) throws IOException {
         Files.createDirectories(Paths.get(DATA_DIR));
         saveDonors(bloodBank.getAllDonors());
@@ -42,6 +48,7 @@ public class FileManager {
         saveBloodBags(bloodBank.getAllBloodBags());
     }
 
+    /** Reads donors, patients and blood bags from the data files (if they exist) back into the given BloodBank. */
     public void loadAll(BloodBank bloodBank) throws IOException {
         for (Donor donor : loadDonors()) {
             bloodBank.addDonor(donor);
