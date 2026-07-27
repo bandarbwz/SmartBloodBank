@@ -27,13 +27,26 @@ import javafx.scene.layout.VBox;
 import java.time.LocalDate;
 import java.util.List;
 
-/** Registers donors, tracks donation eligibility, and lets staff log a completed donation. */
+/**
+ * Shows every registered donor in a table (ID, name, blood type, phone,
+ * last donation date, total donations, and whether they're currently
+ * eligible to donate again). From here staff can: click "+ Add Donor" to
+ * register a new donor, click "Edit" on a row to change that donor's
+ * details, select a row and click "Record Donation" to log a fresh
+ * donation, or select a row and click "Delete Selected" to remove a
+ * donor. Adding/editing a donor calls BloodBank.addDonor(), and
+ * recording a donation creates a new BloodBag and calls
+ * BloodBank.addBloodBag() so it shows up in the inventory too.
+ *
+ * Registers donors, tracks donation eligibility, and lets staff log a completed donation.
+ */
 public class DonorManagementScreen extends Screen {
 
     private Label countLabel;
     private VBox formContainer;
     private TableView<Donor> table;
 
+    /** Builds the donor management screen for the given shared app data. */
     public DonorManagementScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
     }
