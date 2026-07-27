@@ -3,8 +3,6 @@ package com.smartbloodbank.ui;
 import com.smartbloodbank.model.BloodBag;
 import com.smartbloodbank.model.BloodType;
 import com.smartbloodbank.model.Donor;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
@@ -15,25 +13,22 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.DatePicker;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableCell;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.util.StringConverter;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-/** Tracks every blood bag from donation through to use or expiry. */
+/** Tracks every blood bag from donation through to use or expiry, grouped by blood type. */
 public class InventoryScreen extends Screen {
-
-    private TableView<BloodBag> table;
 
     public InventoryScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
@@ -45,103 +40,182 @@ public class InventoryScreen extends Screen {
     }
 
     @Override
-    protected String getSubtitle() {
-        return "Track every blood bag from donation to expiry.";
-    }
-
-    @Override
-    protected Node buildHeaderActions() {
-        Button addButton = new Button("+ Add Blood Bag");
-        addButton.getStyleClass().add("button-primary");
-        addButton.setOnAction(e -> openBagForm());
-        return addButton;
-    }
-
-    @Override
     protected Node buildContent() {
         context.getInventoryManager().updateExpiredBags();
 
-        VBox card = new VBox(14);
-        card.getStyleClass().add("card");
-
-        table = new TableView<>();
-        table.setItems(FXCollections.observableArrayList(context.getBloodBank().getAllBloodBags()));
-        table.setPlaceholder(new Label("No blood bags recorded yet."));
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        TableColumn<BloodBag, String> idCol = new TableColumn<>("Bag ID");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("bagId"));
-
-        TableColumn<BloodBag, BloodType> typeCol = new TableColumn<>("Blood Type");
-        typeCol.setCellValueFactory(new PropertyValueFactory<>("bloodType"));
-
-        TableColumn<BloodBag, String> donorCol = new TableColumn<>("Donor ID");
-        donorCol.setCellValueFactory(new PropertyValueFactory<>("donorId"));
-
-        TableColumn<BloodBag, String> donatedCol = new TableColumn<>("Donated");
-        donatedCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getDonationDate().toString()));
-
-        TableColumn<BloodBag, String> expiresCol = new TableColumn<>("Expires");
-        expiresCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getExpirationDate().toString()));
-
-        TableColumn<BloodBag, String> statusCol = new TableColumn<>("Status");
-        statusCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getStatus().name()));
-        statusCol.setCellFactory(col -> statusPillCell());
-
-        table.getColumns().setAll(List.of(idCol, typeCol, donorCol, donatedCol, expiresCol, statusCol));
-
-        card.getChildren().addAll(buildToolbar(), table);
-        VBox.setVgrow(table, Priority.ALWAYS);
-        return card;
+        VBox root = new VBox(22);
+        root.getChildren().add(buildToolbar());
+        root.getChildren().add(buildBloodTypeSummaryRow());
+        root.getChildren().addAll(buildGroupedSections());
+        return root;
     }
 
-    private TableCell<BloodBag, String> statusPillCell() {
-        return new TableCell<>() {
-            @Override
-            protected void updateItem(String value, boolean empty) {
-                super.updateItem(value, empty);
-                if (empty || value == null) {
-                    setGraphic(null);
-                    return;
-                }
-                Label pill = new Label(value);
-                pill.getStyleClass().add("status-pill");
-                pill.getStyleClass().add(switch (value) {
-                    case "AVAILABLE" -> "status-pill-success";
-                    case "RESERVED" -> "status-pill-warning";
-                    case "EXPIRED" -> "status-pill-danger";
-                    default -> "status-pill-neutral";
-                });
-                setGraphic(pill);
-            }
-        };
-    }
+    private Node buildToolbar() {
+        int totalUnits = context.getBloodBank().getAllBloodBags().size();
+        long typesInStock = context.getBloodBank().getAllBloodBags().stream()
+                .map(BloodBag::getBloodType).distinct().count();
+        Label summary = new Label(totalUnits + " units across " + typesInStock + " blood types");
+        summary.getStyleClass().add("section-label");
 
-    private HBox buildToolbar() {
-        Button refreshButton = new Button("Refresh Expiry Status");
-        refreshButton.getStyleClass().add("button-secondary");
-        refreshButton.setOnAction(e -> {
-            context.getInventoryManager().updateExpiredBags();
-            refreshTable();
-        });
+        Button addButton = new Button("+ Add Blood Bag");
+        addButton.getStyleClass().add("button-primary");
+        addButton.setOnAction(e -> openBagForm());
 
-        Button deleteButton = new Button("Delete Selected");
-        deleteButton.getStyleClass().add("button-danger");
-        deleteButton.setOnAction(e -> deleteSelected());
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        HBox toolbar = new HBox(10, refreshButton, deleteButton);
-        toolbar.setAlignment(Pos.CENTER_RIGHT);
+        HBox toolbar = new HBox(10, summary, spacer, addButton);
+        toolbar.setAlignment(Pos.CENTER_LEFT);
         return toolbar;
     }
 
-    private void deleteSelected() {
-        BloodBag selected = table.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showInfo("Select a blood bag first.");
-            return;
+    private Node buildBloodTypeSummaryRow() {
+        java.util.Map<BloodType, Integer> summary = context.getBloodBank().getStockSummary();
+        HBox row = new HBox(12);
+        for (BloodType type : BloodType.values()) {
+            VBox card = new VBox(4);
+            card.getStyleClass().addAll("blood-type-card", "blood-type-card-normal");
+            card.setAlignment(Pos.CENTER);
+
+            Label typeLabel = new Label(type.getLabel());
+            typeLabel.getStyleClass().add("blood-type-label");
+            Label unitsLabel = new Label(String.valueOf(summary.get(type)));
+            unitsLabel.getStyleClass().addAll("blood-type-units", "blood-type-units-normal");
+            Label caption = new Label("units");
+            caption.getStyleClass().add("blood-type-units-caption");
+
+            card.getChildren().addAll(typeLabel, unitsLabel, caption);
+            HBox.setHgrow(card, Priority.ALWAYS);
+            row.getChildren().add(card);
         }
-        context.getBloodBank().removeBloodBag(selected.getBagId());
-        refreshTable();
+        return row;
+    }
+
+    private List<Node> buildGroupedSections() {
+        List<Node> sections = new ArrayList<>();
+        List<BloodBag> allBags = context.getBloodBank().getAllBloodBags();
+
+        for (BloodType type : BloodType.values()) {
+            List<BloodBag> bags = allBags.stream()
+                    .filter(b -> b.getBloodType() == type)
+                    .sorted(Comparator.comparing(BloodBag::getExpirationDate))
+                    .collect(Collectors.toList());
+            if (bags.isEmpty()) {
+                continue;
+            }
+            sections.add(buildGroupSection(type, bags));
+        }
+        return sections;
+    }
+
+    private Node buildGroupSection(BloodType type, List<BloodBag> bags) {
+        Label groupTitle = new Label("Type " + type.getLabel());
+        groupTitle.getStyleClass().add("card-title");
+        Label groupCount = new Label(bags.size() + " units");
+        groupCount.getStyleClass().add("card-subtitle");
+        HBox header = new HBox(10, groupTitle, groupCount);
+        header.setAlignment(Pos.BASELINE_LEFT);
+
+        VBox tableCard = new VBox();
+        tableCard.getStyleClass().add("section-card");
+        tableCard.getChildren().add(headerRow());
+        for (BloodBag bag : bags) {
+            tableCard.getChildren().add(dataRow(bag));
+        }
+
+        VBox section = new VBox(8, header, tableCard);
+        return section;
+    }
+
+    private Node headerRow() {
+        HBox row = new HBox();
+        row.getStyleClass().add("section-header-row");
+        row.getChildren().addAll(
+                columnLabel("BAG ID", 1.1),
+                columnLabel("COLLECTED", 1.1),
+                columnLabel("EXPIRY", 1.1),
+                columnLabel("EXPIRES IN", 1.3),
+                columnLabel("DONOR", 1.0),
+                columnLabel("STATUS", 1.0),
+                columnLabel("", 0.7));
+        return row;
+    }
+
+    private Label columnLabel(String text, double growFactor) {
+        Label label = new Label(text);
+        label.getStyleClass().add("section-header-label");
+        HBox.setHgrow(label, Priority.ALWAYS);
+        label.setMaxWidth(Double.MAX_VALUE);
+        label.setPrefWidth(80 * growFactor);
+        return label;
+    }
+
+    private Node dataRow(BloodBag bag) {
+        Label id = cellLabel(bag.getBagId(), true, 1.1);
+        Label collected = cellLabel(bag.getDonationDate().toString(), false, 1.1);
+        Label expiry = cellLabel(bag.getExpirationDate().toString(), false, 1.1);
+
+        Node expiresIn = expiryIndicator(bag);
+        HBox.setHgrow(expiresIn, Priority.ALWAYS);
+        expiresIn.setStyle("-fx-pref-width: " + (80 * 1.3) + "px;");
+
+        Label donor = cellLabel(bag.getDonorId(), false, 1.0);
+
+        Label status = new Label(bag.getStatus().name());
+        status.getStyleClass().addAll("status-pill", switch (bag.getStatus()) {
+            case AVAILABLE -> "status-pill-available";
+            case RESERVED -> "status-pill-reserved";
+            case USED -> "status-pill-used";
+            case EXPIRED -> "status-pill-expired";
+        });
+        HBox statusBox = new HBox(status);
+        HBox.setHgrow(statusBox, Priority.ALWAYS);
+        statusBox.setPrefWidth(80);
+
+        Button remove = new Button("Remove");
+        remove.getStyleClass().add("button-small");
+        remove.setOnAction(e -> {
+            context.getBloodBank().removeBloodBag(bag.getBagId());
+            appShell.refreshCurrent();
+        });
+        HBox actionsBox = new HBox(remove);
+        actionsBox.setPrefWidth(56);
+
+        HBox row = new HBox(id, collected, expiry, expiresIn, donor, statusBox, actionsBox);
+        row.getStyleClass().add("data-row");
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    private Label cellLabel(String text, boolean emphasis, double growFactor) {
+        Label label = new Label(text);
+        label.getStyleClass().add(emphasis ? "data-row-emphasis" : "data-row-text");
+        HBox.setHgrow(label, Priority.ALWAYS);
+        label.setPrefWidth(80 * growFactor);
+        return label;
+    }
+
+    private Node expiryIndicator(BloodBag bag) {
+        long days = bag.daysUntilExpiry();
+        int warningDays = context.getInventoryManager().getExpiryWarningDays();
+        String text;
+        String styleClass;
+        if (bag.getStatus() == BloodBag.Status.EXPIRED) {
+            text = "Expired " + Math.abs(days) + "d ago";
+            styleClass = "expiry-label-danger";
+        } else if (days <= 0) {
+            text = "Expires today";
+            styleClass = "expiry-label-danger";
+        } else if (days <= warningDays) {
+            text = "Expires in " + days + "d";
+            styleClass = "expiry-label-warning";
+        } else {
+            text = "Expires in " + days + "d";
+            styleClass = "expiry-label-neutral";
+        }
+        Label label = new Label(text);
+        label.getStyleClass().add(styleClass);
+        return label;
     }
 
     private void openBagForm() {
@@ -158,7 +232,7 @@ public class InventoryScreen extends Screen {
         dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
         dialog.getDialogPane().getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
 
-        ComboBox<Donor> donorBox = new ComboBox<>(FXCollections.observableArrayList(eligibleDonors));
+        ComboBox<Donor> donorBox = new ComboBox<>(javafx.collections.FXCollections.observableArrayList(eligibleDonors));
         donorBox.setConverter(new StringConverter<>() {
             @Override
             public String toString(Donor donor) {
@@ -174,7 +248,10 @@ public class InventoryScreen extends Screen {
 
         DatePicker donationDatePicker = new DatePicker(LocalDate.now());
 
-        GridPane grid = formGrid();
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.setPadding(new Insets(10, 0, 0, 0));
         grid.addRow(0, formLabel("Donor"), donorBox);
         grid.addRow(1, formLabel("Donation Date"), donationDatePicker);
         dialog.getDialogPane().setContent(grid);
@@ -195,20 +272,8 @@ public class InventoryScreen extends Screen {
         Optional<BloodBag> result = dialog.showAndWait();
         result.ifPresent(bag -> {
             context.getBloodBank().addBloodBag(bag);
-            refreshTable();
+            appShell.refreshCurrent();
         });
-    }
-
-    private void refreshTable() {
-        table.setItems(FXCollections.observableArrayList(context.getBloodBank().getAllBloodBags()));
-    }
-
-    private GridPane formGrid() {
-        GridPane grid = new GridPane();
-        grid.setHgap(12);
-        grid.setVgap(12);
-        grid.setPadding(new Insets(10, 0, 0, 0));
-        return grid;
     }
 
     private Label formLabel(String text) {

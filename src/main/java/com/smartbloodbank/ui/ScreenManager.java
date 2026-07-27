@@ -1,6 +1,7 @@
 package com.smartbloodbank.ui;
 
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
@@ -27,6 +28,7 @@ public class ScreenManager {
         stage.setTitle("Smart Blood Bank Management System");
         stage.setMinWidth(1000);
         stage.setMinHeight(650);
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("images/logo.png")));
     }
 
     public void showLogin() {
@@ -34,8 +36,8 @@ public class ScreenManager {
         setScene(loginScreen);
     }
 
-    public void showApp(ScreenId initialScreen) {
-        AppShell appShell = new AppShell(this, context, initialScreen);
+    public void showApp(ScreenId initialScreen, String username) {
+        AppShell appShell = new AppShell(this, context, initialScreen, username);
         setScene(appShell);
     }
 

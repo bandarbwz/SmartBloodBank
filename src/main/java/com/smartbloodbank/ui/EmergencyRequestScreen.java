@@ -1,29 +1,38 @@
 package com.smartbloodbank.ui;
 
-import com.smartbloodbank.model.BloodType;
+import com.smartbloodbank.model.BloodBag;
+import com.smartbloodbank.model.EmergencyLevel;
 import com.smartbloodbank.model.Patient;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
 
-/** Shows patients waiting for blood, ordered by urgency, and processes the queue via BloodMatcher. */
+/**
+ * Patients waiting for blood, ordered by urgency, with a detail panel
+ * showing real FIFO-matched compatible bags for whichever request is
+ * selected. Fulfilling reserves real stock via BloodMatcher; there is no
+ * separate Approve/Reject concept in the domain model, so those actions
+ * aren't fabricated here — only Fulfill and Remove, both backed by real
+ * service calls.
+ */
 public class EmergencyRequestScreen extends Screen {
 
-    private TableView<Patient> table;
+    private VBox queueContainer;
+    private VBox detailContainer;
+    private Label chipsRow;
+    private Patient selectedPatient;
 
     public EmergencyRequestScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
@@ -35,108 +44,205 @@ public class EmergencyRequestScreen extends Screen {
     }
 
     @Override
-    protected String getSubtitle() {
-        return "Patients waiting for blood, ordered by urgency.";
-    }
-
-    @Override
-    protected Node buildHeaderActions() {
-        Button processButton = new Button("Process Next Request");
-        processButton.getStyleClass().add("button-primary");
-        processButton.setOnAction(e -> processNext());
-        return processButton;
-    }
-
-    @Override
     protected Node buildContent() {
-        VBox root = new VBox(20);
-        root.getChildren().addAll(buildNextInLineCard(), buildQueueCard());
+        queueContainer = new VBox(12);
+        detailContainer = new VBox(16);
+        detailContainer.getStyleClass().add("card");
+        detailContainer.setPrefWidth(340);
+        detailContainer.setMinWidth(320);
+
+        VBox leftColumn = new VBox(16, buildChipsRow(), queueContainer);
+        HBox.setHgrow(leftColumn, Priority.ALWAYS);
+
+        HBox root = new HBox(20, leftColumn, detailContainer);
+        renderAll();
         return root;
     }
 
-    private Node buildNextInLineCard() {
-        VBox card = new VBox(8);
-        card.getStyleClass().add("card");
-        Label title = new Label("Next in Line");
-        title.getStyleClass().add("card-title");
+    private Node buildChipsRow() {
+        chipsRow = new Label();
+        return chipsRow;
+    }
 
-        Patient next = context.getEmergencyRequest().peekNextRequest();
-        Label detail = new Label(next == null
-                ? "No pending emergency requests."
-                : String.format("%s — %s | Needs %d unit(s) of %s | Ward %s",
-                        next.getFullName(), next.getEmergencyLevel().getDescription(),
-                        next.getUnitsRequired(), next.getBloodType(), next.getWardNumber()));
-        detail.getStyleClass().add(next == null ? "empty-state" : "page-subtitle");
+    private List<Patient> pendingSorted() {
+        return context.getEmergencyRequest().getPendingRequestsSorted();
+    }
 
-        card.getChildren().addAll(title, detail);
+    private void renderAll() {
+        List<Patient> pending = pendingSorted();
+        if (selectedPatient == null || !pending.contains(selectedPatient)) {
+            selectedPatient = pending.isEmpty() ? null : pending.get(0);
+        }
+        renderChips(pending);
+        renderQueue(pending);
+        renderDetail(selectedPatient);
+    }
+
+    private void renderChips(List<Patient> pending) {
+        long critical = pending.stream().filter(p -> p.getEmergencyLevel() == EmergencyLevel.CRITICAL).count();
+        chipsRow.setText(critical + " Critical · " + pending.size() + " Pending");
+        chipsRow.getStyleClass().setAll("emergency-pill", "emergency-critical");
+    }
+
+    private void renderQueue(List<Patient> pending) {
+        queueContainer.getChildren().clear();
+        if (pending.isEmpty()) {
+            Label empty = new Label("No pending emergency requests.");
+            empty.getStyleClass().add("empty-state");
+            queueContainer.getChildren().add(empty);
+            return;
+        }
+        for (Patient patient : pending) {
+            queueContainer.getChildren().add(buildCard(patient));
+        }
+    }
+
+    private Node buildCard(Patient patient) {
+        boolean critical = patient.getEmergencyLevel() == EmergencyLevel.CRITICAL;
+        boolean selected = patient == selectedPatient;
+
+        Label name = new Label(patient.getFullName());
+        name.getStyleClass().add("request-card-title");
+
+        Label typeChip = new Label(patient.getBloodType().getLabel());
+        typeChip.getStyleClass().add("request-type-chip");
+
+        Label priority = new Label(patient.getEmergencyLevel().getDescription());
+        priority.getStyleClass().addAll("emergency-pill", "emergency-" + patient.getEmergencyLevel().name().toLowerCase());
+
+        HBox titleRow = new HBox(10, name, typeChip, priority);
+        titleRow.setAlignment(Pos.CENTER_LEFT);
+
+        Label meta = new Label(patient.getId() + " · " + patient.getUnitsRequired() + " unit(s) needed · Ward " + patient.getWardNumber());
+        meta.getStyleClass().add("request-card-meta");
+
+        Button fulfillButton = new Button("Fulfill (FIFO)");
+        fulfillButton.getStyleClass().add("button-primary");
+        wireCardAction(fulfillButton, e -> fulfill(patient));
+
+        Button removeButton = new Button("Remove");
+        removeButton.getStyleClass().add("button-secondary");
+        wireCardAction(removeButton, e -> remove(patient));
+
+        HBox actions = new HBox(8, fulfillButton, removeButton);
+        actions.setPadding(new Insets(4, 0, 0, 0));
+
+        VBox card = new VBox(6, titleRow, meta, actions);
+        card.getStyleClass().add("request-card");
+        if (critical) {
+            card.getStyleClass().add("request-card-critical");
+        }
+        if (selected) {
+            card.getStyleClass().add("request-card-selected");
+        }
+        card.setOnMouseClicked(e -> {
+            selectedPatient = patient;
+            renderAll();
+        });
         return card;
     }
 
-    private Node buildQueueCard() {
-        VBox card = new VBox(14);
-        card.getStyleClass().add("card");
-
-        Label title = new Label("Pending Queue (by urgency)");
-        title.getStyleClass().add("card-title");
-
-        table = new TableView<>();
-        table.setItems(FXCollections.observableArrayList(context.getEmergencyRequest().getPendingRequestsSorted()));
-        table.setPlaceholder(new Label("No pending requests."));
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
-
-        TableColumn<Patient, String> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
-
-        TableColumn<Patient, String> nameCol = new TableColumn<>("Full Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-
-        TableColumn<Patient, BloodType> typeCol = new TableColumn<>("Blood Type");
-        typeCol.setCellValueFactory(new PropertyValueFactory<>("bloodType"));
-
-        TableColumn<Patient, String> urgencyCol = new TableColumn<>("Urgency");
-        urgencyCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getEmergencyLevel().getDescription()));
-
-        TableColumn<Patient, Number> unitsCol = new TableColumn<>("Units Needed");
-        unitsCol.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getUnitsRequired()));
-
-        TableColumn<Patient, String> wardCol = new TableColumn<>("Ward");
-        wardCol.setCellValueFactory(new PropertyValueFactory<>("wardNumber"));
-
-        table.getColumns().setAll(List.of(idCol, nameCol, typeCol, urgencyCol, unitsCol, wardCol));
-
-        Button removeButton = new Button("Remove Selected From Queue");
-        removeButton.getStyleClass().add("button-danger");
-        removeButton.setOnAction(e -> removeSelected());
-
-        HBox toolbar = new HBox(removeButton);
-        toolbar.setAlignment(Pos.CENTER_RIGHT);
-
-        card.getChildren().addAll(title, toolbar, table);
-        VBox.setVgrow(table, Priority.ALWAYS);
-        return card;
+    /** Runs the action and stops the click from also bubbling up to the card's own select-on-click handler. */
+    private void wireCardAction(Button button, javafx.event.EventHandler<javafx.event.ActionEvent> handler) {
+        button.setOnAction(handler);
+        button.addEventHandler(MouseEvent.MOUSE_CLICKED, MouseEvent::consume);
     }
 
-    private void processNext() {
-        Patient processed = context.getEmergencyRequest().processNextRequest();
-        if (processed == null) {
-            showInfo(context.getEmergencyRequest().getPendingCount() == 0
-                    ? "There are no pending requests."
-                    : "Not enough compatible stock to fulfill the next request yet.");
+    private void renderDetail(Patient patient) {
+        detailContainer.getChildren().clear();
+        if (patient == null) {
+            Label empty = new Label("No request selected.");
+            empty.getStyleClass().add("empty-state");
+            detailContainer.getChildren().add(empty);
             return;
         }
-        showInfo("Fulfilled request for " + processed.getFullName() + " (" + processed.getUnitsRequired()
-                + " unit(s) of " + processed.getBloodType() + ").");
-        appShell.refreshCurrent();
+
+        Label name = new Label(patient.getFullName());
+        name.getStyleClass().add("card-title");
+        Label subtitle = new Label("Patient " + patient.getId());
+        subtitle.getStyleClass().add("card-subtitle");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(12);
+        grid.setVgap(12);
+        grid.add(detailField("BLOOD TYPE", patient.getBloodType().getLabel()), 0, 0);
+        grid.add(detailField("UNITS NEEDED", String.valueOf(patient.getUnitsRequired())), 1, 0);
+        grid.add(detailField("WARD", patient.getWardNumber()), 0, 1);
+        grid.add(detailField("PRIORITY", patient.getEmergencyLevel().getDescription()), 1, 1);
+        for (int i = 0; i < 2; i++) {
+            javafx.scene.layout.ColumnConstraints cc = new javafx.scene.layout.ColumnConstraints();
+            cc.setPercentWidth(50);
+            grid.getColumnConstraints().add(cc);
+        }
+
+        Label bagsTitle = new Label("Suggested Compatible Bags (FIFO)");
+        bagsTitle.getStyleClass().add("form-label");
+
+        VBox bagsList = new VBox();
+        bagsList.getStyleClass().add("section-card");
+        List<BloodBag> compatible = context.getBloodMatcher().findCompatibleBags(patient.getBloodType());
+        if (compatible.isEmpty()) {
+            Label none = new Label("No compatible stock available.");
+            none.getStyleClass().add("empty-state");
+            none.setPadding(new Insets(12));
+            bagsList.getChildren().add(none);
+        } else {
+            for (BloodBag bag : compatible.subList(0, Math.min(3, compatible.size()))) {
+                bagsList.getChildren().add(bagRow(bag));
+            }
+        }
+
+        detailContainer.getChildren().addAll(name, subtitle, grid, bagsTitle, bagsList);
     }
 
-    private void removeSelected() {
-        Patient selected = table.getSelectionModel().getSelectedItem();
-        if (selected == null) {
-            showInfo("Select a patient first.");
+    private Node detailField(String label, String value) {
+        Label labelNode = new Label(label);
+        labelNode.getStyleClass().add("detail-field-label");
+        Label valueNode = new Label(value);
+        valueNode.getStyleClass().add("detail-field-value");
+        return new VBox(2, labelNode, valueNode);
+    }
+
+    private Node bagRow(BloodBag bag) {
+        Label idType = new Label(bag.getBagId() + " · " + bag.getBloodType().getLabel());
+        idType.getStyleClass().add("data-row-emphasis");
+        Label expiry = new Label("Expiry " + bag.getExpirationDate());
+        expiry.getStyleClass().add("kpi-subtitle");
+        VBox left = new VBox(2, idType, expiry);
+
+        Label days = new Label(bag.daysUntilExpiry() <= 0 ? "Expires today" : "Expires in " + bag.daysUntilExpiry() + "d");
+        days.getStyleClass().add("expiry-label-warning");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+
+        HBox row = new HBox(10, left, spacer, days);
+        row.getStyleClass().add("data-row");
+        row.setAlignment(Pos.CENTER_LEFT);
+        return row;
+    }
+
+    private void fulfill(Patient patient) {
+        if (!context.getBloodMatcher().canFulfill(patient.getBloodType(), patient.getUnitsRequired())) {
+            showInfo("Not enough compatible stock to fulfill this request yet.");
             return;
         }
-        context.getEmergencyRequest().removeRequest(selected);
-        appShell.refreshCurrent();
+        List<BloodBag> reserved = context.getBloodMatcher().matchAndReserve(patient);
+        reserved.forEach(BloodBag::markUsed);
+        patient.markFulfilled();
+        context.getEmergencyRequest().removeRequest(patient);
+        if (patient == selectedPatient) {
+            selectedPatient = null;
+        }
+        renderAll();
+    }
+
+    private void remove(Patient patient) {
+        context.getEmergencyRequest().removeRequest(patient);
+        if (patient == selectedPatient) {
+            selectedPatient = null;
+        }
+        renderAll();
     }
 
     private void showInfo(String message) {

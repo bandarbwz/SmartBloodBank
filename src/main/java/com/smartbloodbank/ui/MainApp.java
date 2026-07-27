@@ -14,7 +14,16 @@ public class MainApp extends Application {
         context.loadData();
 
         ScreenManager screenManager = new ScreenManager(primaryStage, context);
-        screenManager.showLogin();
+
+        // Dev convenience only: -Dsbb.debug.screen=<ScreenId> jumps straight
+        // into the app shell, skipping the (non-authenticating) login gate,
+        // so a specific screen can be reached quickly during development.
+        String debugScreen = System.getProperty("sbb.debug.screen");
+        if (debugScreen != null) {
+            screenManager.showApp(ScreenManager.ScreenId.valueOf(debugScreen.trim().toUpperCase()), "admin");
+        } else {
+            screenManager.showLogin();
+        }
     }
 
     @Override

@@ -1,209 +1,341 @@
 /*
- * Shared stylesheet for every screen in the app. Centralising the palette
- * and component styles here (instead of inline styling per screen) keeps
- * the look consistent, the same idea as centralising domain rules in the
- * model layer.
+ * Shared stylesheet for every screen in the app. Palette, radii and
+ * spacing are matched to designs/design-reference.html as closely as
+ * JavaFX CSS allows. Centralising it here (instead of inline styling per
+ * screen) keeps the look consistent, the same idea as centralising domain
+ * rules in the model layer.
  */
 
 .root {
     -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
     -fx-font-size: 13px;
-    -fx-background-color: #F4F6F9;
+    -fx-background-color: #F5F6F7;
 }
 
 /* ---------- Layout shell ---------- */
 
 .app-shell {
-    -fx-background-color: #F4F6F9;
+    -fx-background-color: #F5F6F7;
 }
 
 .sidebar {
-    -fx-background-color: #1E2430;
-    -fx-min-width: 220px;
-    -fx-pref-width: 220px;
-    -fx-padding: 0 0 16 0;
+    -fx-background-color: #1F242C;
+    -fx-min-width: 264px;
+    -fx-pref-width: 264px;
+    -fx-padding: 20 14 16 14;
 }
 
 .sidebar .brand-box {
-    -fx-padding: 26 20 22 20;
+    -fx-padding: 8 10 22 10;
 }
 
 .sidebar .brand-title {
     -fx-text-fill: white;
-    -fx-font-size: 18px;
+    -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
 
 .sidebar .brand-subtitle {
-    -fx-text-fill: #8B93A7;
-    -fx-font-size: 11px;
+    -fx-text-fill: #9AA1AC;
+    -fx-font-size: 10px;
+    -fx-font-weight: bold;
 }
 
 .sidebar-button {
     -fx-background-color: transparent;
-    -fx-text-fill: #B7BECD;
-    -fx-font-size: 13px;
+    -fx-text-fill: #C7CCD3;
+    -fx-font-size: 13.5px;
+    -fx-font-weight: bold;
     -fx-alignment: CENTER_LEFT;
-    -fx-padding: 12 20 12 20;
-    -fx-background-radius: 0;
+    -fx-padding: 11 12 11 12;
+    -fx-background-radius: 8;
     -fx-cursor: hand;
     -fx-max-width: Infinity;
 }
 
 .sidebar-button:hover {
-    -fx-background-color: #2A3242;
+    -fx-background-color: #2A3038;
     -fx-text-fill: white;
 }
 
 .sidebar-button-active {
-    -fx-background-color: #C62828;
+    -fx-background-color: #96222F;
     -fx-text-fill: white;
+}
+
+.nav-icon {
+    -fx-icon-color: #6B7280;
+}
+
+.nav-icon-active {
+    -fx-icon-color: white;
+}
+
+.sidebar-footer {
+    -fx-border-color: #2A3038 transparent transparent transparent;
+    -fx-border-width: 1;
+    -fx-padding: 14 10 4 10;
+}
+
+.sidebar-avatar {
+    -fx-background-color: #96222F;
+    -fx-background-radius: 50%;
+    -fx-min-width: 32px;
+    -fx-min-height: 32px;
+    -fx-max-width: 32px;
+    -fx-max-height: 32px;
+    -fx-alignment: CENTER;
+}
+
+.sidebar-avatar-text {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
     -fx-font-weight: bold;
 }
 
-.sidebar-separator {
-    -fx-background-color: #323A4B;
-    -fx-min-height: 1px;
-    -fx-max-height: 1px;
-    -fx-margin: 8 0 8 0;
+.sidebar-user-name {
+    -fx-text-fill: white;
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+}
+
+.sidebar-user-role {
+    -fx-text-fill: #9AA1AC;
+    -fx-font-size: 11px;
 }
 
 .top-bar {
     -fx-background-color: white;
-    -fx-padding: 18 32 18 32;
-    -fx-border-color: transparent transparent #E4E7EC transparent;
+    -fx-min-height: 64px;
+    -fx-pref-height: 64px;
+    -fx-padding: 0 28 0 28;
+    -fx-border-color: transparent transparent #E5E7EB transparent;
     -fx-border-width: 1;
 }
 
 .page-title {
-    -fx-font-size: 21px;
+    -fx-font-size: 18px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1B1F27;
+    -fx-text-fill: #1F2937;
 }
 
 .page-subtitle {
-    -fx-font-size: 12.5px;
+    -fx-font-size: 13px;
+    -fx-text-fill: #6B7280;
+}
+
+.top-bar-date {
+    -fx-font-size: 13px;
     -fx-text-fill: #6B7280;
 }
 
 .content-area {
-    -fx-background-color: #F4F6F9;
-    -fx-padding: 24 32 32 32;
+    -fx-background-color: #F5F6F7;
+    -fx-padding: 28;
 }
 
-/* ---------- Cards & stat tiles ---------- */
+/* ---------- Cards ---------- */
 
 .card {
     -fx-background-color: white;
-    -fx-background-radius: 10;
-    -fx-border-radius: 10;
-    -fx-border-color: #E5E8EE;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #E5E7EB;
     -fx-border-width: 1;
-    -fx-padding: 18;
-    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.06), 10, 0, 0, 2);
+    -fx-padding: 22;
 }
 
 .card-title {
     -fx-font-size: 15px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1B1F27;
+    -fx-text-fill: #1F2937;
 }
 
-.stat-tile {
+.card-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #9CA3AF;
+}
+
+.section-label {
+    -fx-font-size: 13px;
+    -fx-text-fill: #6B7280;
+}
+
+/* ---------- KPI tiles ---------- */
+
+.kpi-card {
+    -fx-background-color: white;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1;
+    -fx-padding: 18 20 18 20;
+}
+
+.kpi-card-alert {
+    -fx-background-color: #FCEAEC;
+    -fx-background-radius: 12;
+    -fx-border-radius: 12;
+    -fx-border-color: #F3C9CF;
+    -fx-border-width: 1;
+    -fx-padding: 18 20 18 20;
+}
+
+.kpi-label {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #6B7280;
+}
+
+.kpi-value {
+    -fx-font-size: 30px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1F2937;
+}
+
+.kpi-value-alert {
+    -fx-font-size: 30px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #96222F;
+}
+
+.kpi-subtitle {
+    -fx-font-size: 12px;
+    -fx-text-fill: #9CA3AF;
+}
+
+/* ---------- Blood type availability cards ---------- */
+
+.blood-type-card {
     -fx-background-color: white;
     -fx-background-radius: 10;
     -fx-border-radius: 10;
-    -fx-border-color: #E5E8EE;
     -fx-border-width: 1;
-    -fx-padding: 16 18 16 18;
-    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.06), 10, 0, 0, 2);
+    -fx-padding: 14;
+    -fx-alignment: CENTER;
 }
 
-.stat-tile-value {
-    -fx-font-size: 26px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1B1F27;
+.blood-type-card-normal { -fx-border-color: #E5E7EB; }
+.blood-type-card-low { -fx-border-color: #F5DFA6; }
+.blood-type-card-critical { -fx-border-color: #F3C9CF; }
+
+.blood-type-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: 800;
+    -fx-text-fill: #1F2937;
 }
 
-.stat-tile-label {
-    -fx-font-size: 11.5px;
+.blood-type-units {
+    -fx-font-size: 19px;
+    -fx-font-weight: 800;
+}
+
+.blood-type-units-normal { -fx-text-fill: #1F2937; }
+.blood-type-units-low { -fx-text-fill: #B98900; }
+.blood-type-units-critical { -fx-text-fill: #96222F; }
+
+.blood-type-units-caption {
+    -fx-font-size: 10px;
     -fx-text-fill: #6B7280;
+}
+
+.blood-type-tag {
+    -fx-font-size: 10px;
     -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 2 6 2 6;
 }
 
-.stat-tile-accent {
-    -fx-min-width: 6px;
-    -fx-max-width: 6px;
-    -fx-background-radius: 4;
-}
-
-.accent-red { -fx-background-color: #C62828; }
-.accent-blue { -fx-background-color: #2563EB; }
-.accent-amber { -fx-background-color: #ED6C02; }
-.accent-green { -fx-background-color: #2E7D32; }
+.blood-type-tag-normal { -fx-text-fill: #1E8E5A; -fx-background-color: #EAF7EF; }
+.blood-type-tag-low { -fx-text-fill: #B98900; -fx-background-color: #FDF3E0; }
+.blood-type-tag-critical { -fx-text-fill: #96222F; -fx-background-color: #FCEAEC; }
 
 /* ---------- Buttons ---------- */
 
 .button-primary {
-    -fx-background-color: #C62828;
+    -fx-background-color: #96222F;
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-background-radius: 6;
-    -fx-padding: 9 18 9 18;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-padding: 10 16 10 16;
     -fx-cursor: hand;
 }
 
 .button-primary:hover {
-    -fx-background-color: #A81F1F;
+    -fx-background-color: #7A1B27;
 }
 
 .button-secondary {
-    -fx-background-color: #EEF0F4;
-    -fx-text-fill: #1B1F27;
+    -fx-background-color: white;
+    -fx-text-fill: #374151;
     -fx-font-weight: bold;
-    -fx-background-radius: 6;
-    -fx-padding: 9 18 9 18;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1;
+    -fx-padding: 9 15 9 15;
     -fx-cursor: hand;
 }
 
 .button-secondary:hover {
-    -fx-background-color: #E1E4EA;
+    -fx-background-color: #F7F7F8;
 }
 
 .button-danger {
     -fx-background-color: transparent;
-    -fx-text-fill: #C62828;
+    -fx-text-fill: #96222F;
     -fx-font-weight: bold;
-    -fx-background-radius: 6;
-    -fx-border-color: #C62828;
-    -fx-border-radius: 6;
-    -fx-padding: 8 17 8 17;
+    -fx-font-size: 13px;
+    -fx-background-radius: 8;
+    -fx-border-color: #96222F;
+    -fx-border-radius: 8;
+    -fx-border-width: 1;
+    -fx-padding: 9 15 9 15;
     -fx-cursor: hand;
 }
 
 .button-danger:hover {
-    -fx-background-color: #FDEBEC;
+    -fx-background-color: #FCEAEC;
+}
+
+.button-small {
+    -fx-background-color: transparent;
+    -fx-text-fill: #374151;
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #D1D5DB;
+    -fx-border-width: 1;
+    -fx-padding: 5 10 5 10;
+    -fx-cursor: hand;
+}
+
+.button-small:hover {
+    -fx-background-color: #F7F7F8;
 }
 
 /* ---------- Inputs ---------- */
 
-.text-field, .password-field, .combo-box, .date-picker, .text-area {
-    -fx-background-color: #FAFAFB;
-    -fx-background-radius: 6;
-    -fx-border-radius: 6;
-    -fx-border-color: #D8DCE3;
+.text-field, .password-field, .combo-box, .date-picker, .text-area, .spinner {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-border-color: #D1D5DB;
     -fx-border-width: 1;
-    -fx-padding: 7 10 7 10;
+    -fx-padding: 6 10 6 10;
 }
 
 .text-field:focused, .password-field:focused, .combo-box:focused, .date-picker:focused {
-    -fx-border-color: #C62828;
+    -fx-border-color: #96222F;
 }
 
 .form-label {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
-    -fx-text-fill: #3F4652;
+    -fx-text-fill: #374151;
 }
 
 /* ---------- Tables ---------- */
@@ -211,122 +343,314 @@
 .table-view {
     -fx-background-color: white;
     -fx-background-radius: 10;
-    -fx-border-color: #E5E8EE;
+    -fx-border-color: #E5E7EB;
     -fx-border-radius: 10;
 }
 
 .table-view .column-header-background {
-    -fx-background-color: #F7F8FA;
+    -fx-background-color: #FAFAFB;
     -fx-background-radius: 10 10 0 0;
 }
 
 .table-view .column-header, .table-view .filler {
     -fx-background-color: transparent;
-    -fx-border-color: transparent transparent #E5E8EE transparent;
+    -fx-border-color: transparent transparent #E5E7EB transparent;
 }
 
 .table-view .column-header .label {
-    -fx-text-fill: #6B7280;
+    -fx-text-fill: #9CA3AF;
     -fx-font-weight: bold;
-    -fx-font-size: 11.5px;
+    -fx-font-size: 11px;
 }
 
 .table-row-cell {
     -fx-background-color: white;
-    -fx-border-color: transparent transparent #F0F1F5 transparent;
+    -fx-border-color: transparent transparent #F1F2F4 transparent;
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #FBFBFC;
+    -fx-background-color: white;
 }
 
 .table-row-cell:selected {
-    -fx-background-color: #FDEBEC;
-    -fx-text-fill: #1B1F27;
+    -fx-background-color: #FCEAEC;
+    -fx-text-fill: #1F2937;
 }
 
-/* ---------- Status pills ---------- */
+/* ---------- Grouped rows (Inventory-by-type sections) ---------- */
+
+.section-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1;
+}
+
+.section-header-row {
+    -fx-background-color: #FAFAFB;
+    -fx-padding: 10 16 10 16;
+    -fx-border-color: transparent transparent #E5E7EB transparent;
+    -fx-border-width: 1;
+}
+
+.section-header-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9CA3AF;
+}
+
+.data-row {
+    -fx-padding: 12 16 12 16;
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #F1F2F4 transparent;
+    -fx-border-width: 1;
+}
+
+.data-row:hover {
+    -fx-background-color: #FAFAFB;
+}
+
+.data-row-emphasis {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+}
+
+.data-row-text {
+    -fx-font-size: 13px;
+    -fx-text-fill: #4B5563;
+}
+
+/* ---------- Status / priority pills ---------- */
 
 .status-pill {
     -fx-background-radius: 20;
-    -fx-padding: 3 12 3 12;
+    -fx-padding: 3 10 3 10;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-border-width: 1;
+    -fx-border-radius: 20;
+}
+
+.status-pill-available { -fx-background-color: #EAF7EF; -fx-text-fill: #1E8E5A; -fx-border-color: #BFE8CE; }
+.status-pill-reserved { -fx-background-color: #FDF3E0; -fx-text-fill: #B98900; -fx-border-color: #F5DFA6; }
+.status-pill-used { -fx-background-color: #EEF0F2; -fx-text-fill: #5B6472; -fx-border-color: #DCE0E4; }
+.status-pill-expired { -fx-background-color: #FCEAEC; -fx-text-fill: #96222F; -fx-border-color: #F3C9CF; }
+
+.emergency-pill {
+    -fx-background-radius: 20;
+    -fx-padding: 3 9 3 9;
     -fx-font-size: 11px;
     -fx-font-weight: bold;
 }
 
-.status-pill-success {
-    -fx-background-color: #E7F5E8;
-    -fx-text-fill: #2E7D32;
+.emergency-critical { -fx-background-color: #FCEAEC; -fx-text-fill: #96222F; }
+.emergency-high { -fx-background-color: #FDEEE0; -fx-text-fill: #C2650A; }
+.emergency-medium { -fx-background-color: #FDF3E0; -fx-text-fill: #B98900; }
+.emergency-low { -fx-background-color: #EAF7EF; -fx-text-fill: #1E8E5A; }
+
+.expiry-label-danger {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #96222F;
 }
 
-.status-pill-warning {
-    -fx-background-color: #FCEEDC;
-    -fx-text-fill: #ED6C02;
+.expiry-label-warning {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #B98900;
 }
 
-.status-pill-danger {
-    -fx-background-color: #FDEBEC;
-    -fx-text-fill: #C62828;
-}
-
-.status-pill-neutral {
-    -fx-background-color: #EEF0F4;
+.expiry-label-neutral {
+    -fx-font-size: 13px;
     -fx-text-fill: #4B5563;
 }
 
-/* ---------- Alert banners (Inventory alerts) ---------- */
+/* ---------- Alert banners / lists ---------- */
 
-.alert-banner {
-    -fx-background-radius: 8;
-    -fx-border-radius: 8;
-    -fx-padding: 10 14 10 14;
-    -fx-font-size: 12.5px;
-}
-
-.alert-banner-warning {
-    -fx-background-color: #FCEEDC;
-    -fx-border-color: #F3C98C;
+.alert-row {
+    -fx-padding: 11 0 11 0;
+    -fx-border-color: #F1F2F4 transparent transparent transparent;
     -fx-border-width: 1;
-    -fx-text-fill: #92400E;
 }
 
-.alert-banner-danger {
-    -fx-background-color: #FDEBEC;
-    -fx-border-color: #F0AEB0;
-    -fx-border-width: 1;
-    -fx-text-fill: #92161C;
+.alert-dot {
+    -fx-min-width: 8px;
+    -fx-max-width: 8px;
+    -fx-min-height: 8px;
+    -fx-max-height: 8px;
+    -fx-background-radius: 50%;
 }
+
+.alert-dot-danger { -fx-background-color: #96222F; }
+.alert-dot-warning { -fx-background-color: #B98900; }
 
 .empty-state {
-    -fx-text-fill: #9AA1AF;
+    -fx-text-fill: #9CA3AF;
     -fx-font-size: 12.5px;
+}
+
+/* ---------- Request cards (Emergency screen) ---------- */
+
+.request-card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #E5E7EB;
+    -fx-border-width: 1 1 1 4;
+    -fx-padding: 16;
+    -fx-cursor: hand;
+}
+
+.request-card-critical {
+    -fx-background-color: #FEF7F8;
+    -fx-border-color: #F3C9CF #F3C9CF #F3C9CF #96222F;
+}
+
+.request-card-selected {
+    -fx-border-color: #96222F #96222F #96222F #96222F;
+}
+
+.request-card-title {
+    -fx-font-size: 14px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+}
+
+.request-card-meta {
+    -fx-font-size: 12px;
+    -fx-text-fill: #6B7280;
+}
+
+.request-type-chip {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+    -fx-background-color: #F1F2F4;
+    -fx-background-radius: 6;
+    -fx-padding: 2 8 2 8;
+}
+
+.detail-field-label {
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #9CA3AF;
+}
+
+.detail-field-value {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+}
+
+/* ---------- Reports bars ---------- */
+
+.bar-chip {
+    -fx-background-color: #96222F;
+    -fx-background-radius: 6 6 0 0;
+}
+
+.bar-track {
+    -fx-background-color: #F1F2F4;
+    -fx-background-radius: 6;
+}
+
+.bar-fill {
+    -fx-background-color: #96222F;
+    -fx-background-radius: 6;
+}
+
+.bar-fill-warning {
+    -fx-background-color: #B98900;
+    -fx-background-radius: 6;
+}
+
+.bar-month-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1F2937;
+}
+
+.bar-axis-label {
+    -fx-font-size: 12px;
+    -fx-text-fill: #9CA3AF;
+}
+
+.outcome-dot {
+    -fx-min-width: 9px;
+    -fx-max-width: 9px;
+    -fx-min-height: 9px;
+    -fx-max-height: 9px;
+    -fx-background-radius: 50%;
 }
 
 /* ---------- Login screen ---------- */
 
 .login-root {
-    -fx-background-color: linear-gradient(to bottom right, #1E2430, #7A1616);
+    -fx-background-color: white;
 }
 
-.login-card {
+.login-brand-panel {
+    -fx-background-color: #7A1B27;
+}
+
+.login-brand-badge {
     -fx-background-color: white;
-    -fx-background-radius: 14;
-    -fx-padding: 40;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 30, 0, 0, 10);
+    -fx-background-radius: 50%;
+    -fx-min-width: 104px;
+    -fx-min-height: 104px;
+    -fx-max-width: 104px;
+    -fx-max-height: 104px;
+    -fx-alignment: CENTER;
+}
+
+.login-brand-title {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-fill: white;
+}
+
+.login-brand-title-accent {
+    -fx-fill: #FF9FA8;
+}
+
+.login-brand-subtitle {
+    -fx-font-size: 13px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #F0C9CE;
+}
+
+.login-brand-tagline {
+    -fx-font-size: 13.5px;
+    -fx-text-fill: #F0C9CE;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
+}
+
+.login-form-panel {
+    -fx-background-color: white;
 }
 
 .login-title {
     -fx-font-size: 22px;
     -fx-font-weight: bold;
-    -fx-text-fill: #1B1F27;
+    -fx-text-fill: #1F2937;
 }
 
 .login-subtitle {
-    -fx-font-size: 12.5px;
+    -fx-font-size: 13px;
     -fx-text-fill: #6B7280;
 }
 
 .login-error {
-    -fx-text-fill: #C62828;
+    -fx-text-fill: #96222F;
     -fx-font-size: 12px;
+}
+
+.login-hint {
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #9CA3AF;
+    -fx-text-alignment: center;
+    -fx-wrap-text: true;
 }

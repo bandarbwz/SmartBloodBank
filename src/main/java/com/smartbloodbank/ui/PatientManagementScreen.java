@@ -4,16 +4,14 @@ import com.smartbloodbank.model.BloodType;
 import com.smartbloodbank.model.EmergencyLevel;
 import com.smartbloodbank.model.Patient;
 import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.collections.FXCollections;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.TableCell;
@@ -21,17 +19,20 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TextField;
 import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 
 import java.util.List;
-import java.util.Optional;
 
-/** Registers patients and lets staff submit their request into the emergency queue. */
+/** Registers patients, submits their emergency blood requests, and tracks fulfillment status. */
 public class PatientManagementScreen extends Screen {
 
+    private Label countLabel;
+    private VBox formContainer;
     private TableView<Patient> table;
 
     public PatientManagementScreen(AppContext context, AppShell appShell) {
@@ -44,75 +45,30 @@ public class PatientManagementScreen extends Screen {
     }
 
     @Override
-    protected String getSubtitle() {
-        return "Register patients and submit emergency blood requests.";
-    }
+    protected Node buildContent() {
+        countLabel = new Label();
+        formContainer = new VBox();
 
-    @Override
-    protected Node buildHeaderActions() {
         Button addButton = new Button("+ Add Patient");
         addButton.getStyleClass().add("button-primary");
-        addButton.setOnAction(e -> openPatientForm());
-        return addButton;
-    }
+        addButton.setOnAction(e -> openForm(null));
 
-    @Override
-    protected Node buildContent() {
-        VBox card = new VBox(14);
-        card.getStyleClass().add("card");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        HBox toolbar = new HBox(10, countLabel, spacer, addButton);
+        toolbar.setAlignment(Pos.CENTER_LEFT);
 
-        table = new TableView<>();
-        table.setItems(FXCollections.observableArrayList(context.getBloodBank().getAllPatients()));
-        table.setPlaceholder(new Label("No patients registered yet."));
-        table.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY);
+        HBox secondaryActions = buildSecondaryActions();
 
-        TableColumn<Patient, String> idCol = new TableColumn<>("ID");
-        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+        table = buildTable();
 
-        TableColumn<Patient, String> nameCol = new TableColumn<>("Full Name");
-        nameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
-
-        TableColumn<Patient, BloodType> typeCol = new TableColumn<>("Blood Type");
-        typeCol.setCellValueFactory(new PropertyValueFactory<>("bloodType"));
-
-        TableColumn<Patient, String> wardCol = new TableColumn<>("Ward");
-        wardCol.setCellValueFactory(new PropertyValueFactory<>("wardNumber"));
-
-        TableColumn<Patient, Number> unitsCol = new TableColumn<>("Units Needed");
-        unitsCol.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getUnitsRequired()));
-
-        TableColumn<Patient, String> urgencyCol = new TableColumn<>("Urgency");
-        urgencyCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().getEmergencyLevel().getDescription()));
-
-        TableColumn<Patient, String> statusCol = new TableColumn<>("Status");
-        statusCol.setCellValueFactory(d -> new SimpleStringProperty(d.getValue().isFulfilled() ? "Fulfilled" : "Pending"));
-        statusCol.setCellFactory(col -> statusPillCell());
-
-        table.getColumns().setAll(List.of(idCol, nameCol, typeCol, wardCol, unitsCol, urgencyCol, statusCol));
-
-        card.getChildren().addAll(buildToolbar(), table);
+        VBox root = new VBox(16, toolbar, formContainer, secondaryActions, table);
         VBox.setVgrow(table, Priority.ALWAYS);
-        return card;
+        updateCount();
+        return root;
     }
 
-    private TableCell<Patient, String> statusPillCell() {
-        return new TableCell<>() {
-            @Override
-            protected void updateItem(String value, boolean empty) {
-                super.updateItem(value, empty);
-                if (empty || value == null) {
-                    setGraphic(null);
-                    return;
-                }
-                Label pill = new Label(value);
-                pill.getStyleClass().add("status-pill");
-                pill.getStyleClass().add("Fulfilled".equals(value) ? "status-pill-success" : "status-pill-warning");
-                setGraphic(pill);
-            }
-        };
-    }
-
-    private HBox buildToolbar() {
+    private HBox buildSecondaryActions() {
         Button requestButton = new Button("Submit Emergency Request");
         requestButton.getStyleClass().add("button-secondary");
         requestButton.setOnAction(e -> submitRequestForSelected());
@@ -124,6 +80,183 @@ public class PatientManagementScreen extends Screen {
         HBox toolbar = new HBox(10, requestButton, deleteButton);
         toolbar.setAlignment(Pos.CENTER_RIGHT);
         return toolbar;
+    }
+
+    private TableView<Patient> buildTable() {
+        TableView<Patient> tableView = new TableView<>();
+        tableView.setItems(FXCollections.observableArrayList(context.getBloodBank().getAllPatients()));
+        tableView.setPlaceholder(new Label("No patients registered yet."));
+        tableView.setColumnResizePolicy(TableView.CONSTRAINED_RESIZE_POLICY_ALL_COLUMNS);
+
+        TableColumn<Patient, String> idCol = new TableColumn<>("Patient ID");
+        idCol.setCellValueFactory(new PropertyValueFactory<>("id"));
+
+        TableColumn<Patient, String> nameCol = new TableColumn<>("Name");
+        nameCol.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+
+        TableColumn<Patient, BloodType> typeCol = new TableColumn<>("Type");
+        typeCol.setCellValueFactory(new PropertyValueFactory<>("bloodType"));
+
+        TableColumn<Patient, String> wardCol = new TableColumn<>("Ward");
+        wardCol.setCellValueFactory(new PropertyValueFactory<>("wardNumber"));
+
+        TableColumn<Patient, Number> unitsCol = new TableColumn<>("Units");
+        unitsCol.setCellValueFactory(d -> new SimpleIntegerProperty(d.getValue().getUnitsRequired()));
+
+        TableColumn<Patient, Patient> emergencyCol = new TableColumn<>("Emergency");
+        emergencyCol.setCellValueFactory(d -> new SimpleObjectProperty<>(d.getValue()));
+        emergencyCol.setCellFactory(col -> emergencyCell());
+
+        TableColumn<Patient, Patient> statusCol = new TableColumn<>("Status");
+        statusCol.setCellValueFactory(d -> new SimpleObjectProperty<>(d.getValue()));
+        statusCol.setCellFactory(col -> statusCell());
+
+        TableColumn<Patient, Patient> actionsCol = new TableColumn<>("Actions");
+        actionsCol.setCellValueFactory(d -> new SimpleObjectProperty<>(d.getValue()));
+        actionsCol.setCellFactory(col -> editCell());
+
+        tableView.getColumns().setAll(List.of(idCol, nameCol, typeCol, wardCol, unitsCol, emergencyCol, statusCol, actionsCol));
+        return tableView;
+    }
+
+    private TableCell<Patient, Patient> emergencyCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(Patient patient, boolean empty) {
+                super.updateItem(patient, empty);
+                if (empty || patient == null) {
+                    setGraphic(null);
+                    return;
+                }
+                Label pill = new Label(patient.getEmergencyLevel().getDescription());
+                pill.getStyleClass().addAll("emergency-pill", "emergency-" + patient.getEmergencyLevel().name().toLowerCase());
+                setGraphic(pill);
+            }
+        };
+    }
+
+    private TableCell<Patient, Patient> statusCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(Patient patient, boolean empty) {
+                super.updateItem(patient, empty);
+                if (empty || patient == null) {
+                    setGraphic(null);
+                    return;
+                }
+                Label pill = new Label(patient.isFulfilled() ? "Fulfilled" : "Pending");
+                pill.getStyleClass().addAll("status-pill", patient.isFulfilled() ? "status-pill-available" : "status-pill-reserved");
+                setGraphic(pill);
+            }
+        };
+    }
+
+    private TableCell<Patient, Patient> editCell() {
+        return new TableCell<>() {
+            @Override
+            protected void updateItem(Patient patient, boolean empty) {
+                super.updateItem(patient, empty);
+                if (empty || patient == null) {
+                    setGraphic(null);
+                    return;
+                }
+                Button editButton = new Button("Edit");
+                editButton.getStyleClass().add("button-small");
+                editButton.setOnAction(e -> openForm(patient));
+                setGraphic(editButton);
+            }
+        };
+    }
+
+    private void openForm(Patient patient) {
+        formContainer.getChildren().setAll(buildFormCard(patient));
+    }
+
+    private void closeForm() {
+        formContainer.getChildren().clear();
+    }
+
+    private Node buildFormCard(Patient patient) {
+        boolean editing = patient != null;
+
+        Label title = new Label(editing ? "Edit Patient" : "Add New Patient");
+        title.getStyleClass().add("card-title");
+
+        TextField nameField = new TextField(editing ? patient.getFullName() : "");
+        TextField contactField = new TextField(editing ? patient.getContactNumber() : "");
+        ComboBox<BloodType> typeBox = new ComboBox<>(FXCollections.observableArrayList(BloodType.values()));
+        typeBox.getSelectionModel().select(editing ? patient.getBloodType() : BloodType.O_POSITIVE);
+        TextField wardField = new TextField(editing ? patient.getWardNumber() : "");
+        ComboBox<EmergencyLevel> urgencyBox = new ComboBox<>(FXCollections.observableArrayList(EmergencyLevel.values()));
+        urgencyBox.getSelectionModel().select(editing ? patient.getEmergencyLevel() : EmergencyLevel.MEDIUM);
+        Spinner<Integer> unitsSpinner = new Spinner<>(1, 20, editing ? patient.getUnitsRequired() : 1);
+        unitsSpinner.setEditable(true);
+        unitsSpinner.setMaxWidth(Double.MAX_VALUE);
+
+        GridPane grid = new GridPane();
+        grid.setHgap(16);
+        grid.setVgap(6);
+        grid.addRow(0, formLabel("Full Name"), formLabel("Blood Type"), formLabel("Contact"));
+        grid.addRow(1, nameField, typeBox, contactField);
+        grid.addRow(2, formLabel("Ward"), formLabel("Emergency Level"), formLabel("Units Required"));
+        grid.addRow(3, wardField, urgencyBox, unitsSpinner);
+        for (Node field : List.of(nameField, typeBox, contactField, wardField, urgencyBox, unitsSpinner)) {
+            GridPane.setHgrow(field, Priority.ALWAYS);
+            if (field instanceof javafx.scene.control.Control control) {
+                control.setMaxWidth(Double.MAX_VALUE);
+            }
+        }
+        for (int col = 0; col < 3; col++) {
+            ColumnConstraints cc = new ColumnConstraints();
+            cc.setPercentWidth(100.0 / 3);
+            grid.getColumnConstraints().add(cc);
+        }
+
+        Label error = new Label("Full name, contact and ward are required.");
+        error.getStyleClass().add("login-error");
+        error.setVisible(false);
+        error.managedProperty().bind(error.visibleProperty());
+
+        Button saveButton = new Button(editing ? "Save Patient" : "Add Patient");
+        saveButton.getStyleClass().add("button-primary");
+        saveButton.setOnAction(e -> {
+            String name = nameField.getText().trim();
+            String contact = contactField.getText().trim();
+            String ward = wardField.getText().trim();
+            if (name.isBlank() || contact.isBlank() || ward.isBlank()) {
+                error.setVisible(true);
+                return;
+            }
+            if (editing) {
+                patient.setFullName(name);
+                patient.setContactNumber(contact);
+                patient.setBloodType(typeBox.getValue());
+                patient.setWardNumber(ward);
+                patient.setEmergencyLevel(urgencyBox.getValue());
+                patient.setUnitsRequired(unitsSpinner.getValue());
+            } else {
+                context.getBloodBank().addPatient(new Patient(name, contact, typeBox.getValue(),
+                        urgencyBox.getValue(), unitsSpinner.getValue(), ward));
+            }
+            closeForm();
+            refreshTable();
+        });
+
+        Button cancelButton = new Button("Cancel");
+        cancelButton.getStyleClass().add("button-secondary");
+        cancelButton.setOnAction(e -> closeForm());
+
+        HBox buttons = new HBox(10, saveButton, cancelButton);
+
+        VBox card = new VBox(16, title, grid, error, buttons);
+        card.getStyleClass().add("card");
+        return card;
+    }
+
+    private Label formLabel(String text) {
+        Label label = new Label(text);
+        label.getStyleClass().add("form-label");
+        return label;
     }
 
     private void submitRequestForSelected() {
@@ -151,63 +284,13 @@ public class PatientManagementScreen extends Screen {
         refreshTable();
     }
 
-    private void openPatientForm() {
-        Dialog<Patient> dialog = new Dialog<>();
-        dialog.setTitle("Add Patient");
-        dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-        dialog.getDialogPane().getStylesheets().add(getClass().getResource("styles.css").toExternalForm());
-
-        TextField nameField = new TextField();
-        TextField contactField = new TextField();
-        ComboBox<BloodType> typeBox = new ComboBox<>(FXCollections.observableArrayList(BloodType.values()));
-        typeBox.getSelectionModel().selectFirst();
-        ComboBox<EmergencyLevel> urgencyBox = new ComboBox<>(FXCollections.observableArrayList(EmergencyLevel.values()));
-        urgencyBox.getSelectionModel().select(EmergencyLevel.MEDIUM);
-        Spinner<Integer> unitsSpinner = new Spinner<>(1, 20, 1);
-        unitsSpinner.setEditable(true);
-        TextField wardField = new TextField();
-
-        GridPane grid = formGrid();
-        grid.addRow(0, formLabel("Full Name"), nameField);
-        grid.addRow(1, formLabel("Contact Number"), contactField);
-        grid.addRow(2, formLabel("Blood Type"), typeBox);
-        grid.addRow(3, formLabel("Urgency"), urgencyBox);
-        grid.addRow(4, formLabel("Units Required"), unitsSpinner);
-        grid.addRow(5, formLabel("Ward Number"), wardField);
-        dialog.getDialogPane().setContent(grid);
-
-        dialog.setResultConverter(button -> {
-            if (button == ButtonType.OK && !nameField.getText().isBlank()
-                    && !contactField.getText().isBlank() && !wardField.getText().isBlank()) {
-                return new Patient(nameField.getText(), contactField.getText(), typeBox.getValue(),
-                        urgencyBox.getValue(), unitsSpinner.getValue(), wardField.getText());
-            }
-            return null;
-        });
-
-        Optional<Patient> result = dialog.showAndWait();
-        result.ifPresent(patient -> {
-            context.getBloodBank().addPatient(patient);
-            refreshTable();
-        });
-    }
-
     private void refreshTable() {
         table.setItems(FXCollections.observableArrayList(context.getBloodBank().getAllPatients()));
+        updateCount();
     }
 
-    private GridPane formGrid() {
-        GridPane grid = new GridPane();
-        grid.setHgap(12);
-        grid.setVgap(12);
-        grid.setPadding(new Insets(10, 0, 0, 0));
-        return grid;
-    }
-
-    private Label formLabel(String text) {
-        Label label = new Label(text);
-        label.getStyleClass().add("form-label");
-        return label;
+    private void updateCount() {
+        countLabel.setText(context.getBloodBank().getAllPatients().size() + " active patient records");
     }
 
     private void showInfo(String message) {

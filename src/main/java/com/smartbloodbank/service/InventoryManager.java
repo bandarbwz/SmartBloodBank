@@ -24,6 +24,14 @@ public class InventoryManager {
         this.bloodBank = bloodBank;
     }
 
+    public int getLowStockThreshold() {
+        return LOW_STOCK_THRESHOLD;
+    }
+
+    public int getExpiryWarningDays() {
+        return EXPIRY_WARNING_DAYS;
+    }
+
     /**
      * Moves any AVAILABLE bag whose shelf life has passed into EXPIRED
      * status. Should be called periodically (e.g. on app startup and
