@@ -13,6 +13,12 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 
 /**
+ * Shared page layout used by every screen in the app: a title bar at the
+ * top (with today's date) and a scrollable content area below it. Each
+ * individual screen (Dashboard, Donor Management, etc.) only has to
+ * supply its title and its own content — this class takes care of
+ * building the consistent frame around it.
+ *
  * ABSTRACTION: common chrome shared by every screen (a top bar with the
  * screen title and today's date, and a scrollable body below it). Each
  * concrete screen only supplies its title and body content — the same
@@ -26,6 +32,7 @@ public abstract class Screen extends BorderPane {
     protected final AppContext context;
     protected final AppShell appShell;
 
+    /** Builds the shared title bar + scrollable body frame around whatever content the subclass provides. */
     protected Screen(AppContext context, AppShell appShell) {
         this.context = context;
         this.appShell = appShell;
@@ -33,8 +40,10 @@ public abstract class Screen extends BorderPane {
         setCenter(buildBody());
     }
 
+    /** Each screen returns the title shown in the top bar, e.g. "Dashboard". */
     protected abstract String getTitle();
 
+    /** Each screen builds and returns its own main content, placed below the top bar. */
     protected abstract Node buildContent();
 
     /** Optional header-right action button(s), placed before the date; none by default. */
