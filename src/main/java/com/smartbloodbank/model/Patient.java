@@ -3,6 +3,11 @@ package com.smartbloodbank.model;
 import java.time.LocalDate;
 
 /**
+ * Represents a patient who needs blood. On top of the shared name/phone/
+ * blood-type details from User, it tracks how urgent their need is, how
+ * many units they need, which ward they're in, and whether their request
+ * has been fulfilled yet.
+ *
  * INHERITANCE: Patient extends the abstract User class, same as Donor —
  * this is the shared hierarchy required by the project brief:
  *
@@ -22,6 +27,7 @@ public class Patient extends User implements Comparable<Patient> {
     private String wardNumber;
     private boolean fulfilled;
 
+    /** Registers a brand-new patient whose request has not been fulfilled yet. */
     public Patient(String fullName, String contactNumber, BloodType bloodType,
                     EmergencyLevel emergencyLevel, int unitsRequired, String wardNumber) {
         super(fullName, contactNumber, bloodType);
@@ -31,6 +37,7 @@ public class Patient extends User implements Comparable<Patient> {
         this.fulfilled = false;
     }
 
+    /** Rebuilds a patient from a previously saved file, reusing their original ID, registration date and status. */
     public Patient(String id, String fullName, String contactNumber, BloodType bloodType, LocalDate registrationDate,
                     EmergencyLevel emergencyLevel, int unitsRequired, String wardNumber, boolean fulfilled) {
         super(id, fullName, contactNumber, bloodType, registrationDate);
@@ -54,6 +61,7 @@ public class Patient extends User implements Comparable<Patient> {
         return unitsRequired;
     }
 
+    /** Changes how many units this patient needs; rejects zero or negative values. */
     public void setUnitsRequired(int unitsRequired) {
         if (unitsRequired <= 0) {
             throw new IllegalArgumentException("Units required must be positive.");
@@ -73,6 +81,7 @@ public class Patient extends User implements Comparable<Patient> {
         return fulfilled;
     }
 
+    /** Marks this patient's request as fulfilled once their blood units have been reserved and given. */
     public void markFulfilled() {
         this.fulfilled = true;
     }
@@ -93,11 +102,13 @@ public class Patient extends User implements Comparable<Patient> {
 
     // ---------- Polymorphism: overriding abstract methods from User ----------
 
+    /** Returns "Patient" so shared code (tables, reports) can label this person's role. */
     @Override
     public String getRoleDescription() {
         return "Patient";
     }
 
+    /** Builds this patient's one-line summary for tables and reports, including ward, units and status. */
     @Override
     public String displayInfo() {
         return baseInfo() + String.format(" | Ward: %s | Units Needed: %d | Priority: %s | Status: %s",
