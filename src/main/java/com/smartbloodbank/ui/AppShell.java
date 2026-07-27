@@ -19,6 +19,12 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 /**
+ * The main screen layout shown after a successful login: a dark sidebar
+ * on the left with navigation buttons and the signed-in user's name at
+ * the bottom, and whichever screen the user picked (Dashboard, Donor
+ * Management, etc.) filling the rest of the window. Clicking a sidebar
+ * button swaps out only the content area — the sidebar itself stays put.
+ *
  * The persistent frame shown once a user is logged in: a dark sidebar for
  * navigation on the left (with the signed-in user's identity pinned to the
  * bottom), and whichever Screen is currently active in the center.
@@ -44,6 +50,7 @@ public class AppShell extends BorderPane {
     private final Map<ScreenManager.ScreenId, FontIcon> navIcons = new LinkedHashMap<>();
     private ScreenManager.ScreenId activeId;
 
+    /** Builds the sidebar once and shows the given screen as the starting point after login. */
     public AppShell(ScreenManager screenManager, AppContext context, ScreenManager.ScreenId initialScreen, String username) {
         this.screenManager = screenManager;
         this.context = context;
@@ -53,6 +60,7 @@ public class AppShell extends BorderPane {
         navigateTo(initialScreen);
     }
 
+    /** Swaps the center content to the given screen and highlights the matching sidebar button. */
     public void navigateTo(ScreenManager.ScreenId id) {
         setCenter(createScreen(id));
         setActiveButton(id);
