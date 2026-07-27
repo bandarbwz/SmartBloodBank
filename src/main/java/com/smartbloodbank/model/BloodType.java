@@ -4,8 +4,10 @@ import java.util.Arrays;
 import java.util.List;
 
 /**
- * Represents the 8 standard human blood types and encodes the
- * real-world donor -> recipient compatibility rules.
+ * The 8 standard human blood types (O-, O+, A-, A+, B-, B+, AB-, AB+),
+ * plus the real-world rules for which types can safely donate to which.
+ * Any code that needs to check compatibility asks this enum instead of
+ * repeating the rules itself, so there's only one place to get them right.
  *
  * Keeping the compatibility rules INSIDE the enum (instead of scattering
  * if/else chains across the codebase) is a small but deliberate OOP design
@@ -56,6 +58,7 @@ public enum BloodType {
                 .orElseThrow(() -> new IllegalArgumentException("Unknown blood type: " + label));
     }
 
+    /** Displays the short label (e.g. "O+") instead of the raw enum constant name. */
     @Override
     public String toString() {
         return label;
