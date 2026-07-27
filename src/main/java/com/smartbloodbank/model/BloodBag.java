@@ -4,10 +4,15 @@ import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
 /**
- * A single unit of stored blood. ENCAPSULATION: all fields private,
- * status transitions only happen through controlled methods (reserve(),
- * markUsed(), markExpired()) instead of a public setter — this protects
- * the object from being put into an invalid state from outside code.
+ * Represents one physical bag of donated blood, from the day it's
+ * collected until it's used or thrown away. It knows its own blood type,
+ * which donor it came from, when it expires, and what state it's
+ * currently in (available, reserved, used, or expired).
+ *
+ * ENCAPSULATION: all fields private, status transitions only happen
+ * through controlled methods (reserve(), markUsed(), markExpired())
+ * instead of a public setter — this protects the object from being put
+ * into an invalid state from outside code.
  */
 public class BloodBag {
 
@@ -24,6 +29,7 @@ public class BloodBag {
     private final LocalDate expirationDate;
     private Status status;
 
+    /** Creates a brand-new bag with a fresh auto-generated ID, AVAILABLE status, and an expiry date 42 days out. */
     public BloodBag(BloodType bloodType, String donorId, LocalDate donationDate) {
         this.bagId = "BB" + String.format("%04d", nextBagId++);
         this.bloodType = bloodType;
@@ -68,14 +74,17 @@ public class BloodBag {
         return status;
     }
 
+    /** Checks whether today's date is past this bag's expiration date. */
     public boolean isExpired() {
         return LocalDate.now().isAfter(expirationDate);
     }
 
+    /** How many days are left until this bag expires (negative if it already has). */
     public long daysUntilExpiry() {
         return ChronoUnit.DAYS.between(LocalDate.now(), expirationDate);
     }
 
+    /** Sets this bag aside for a specific patient; only allowed while it's still AVAILABLE. */
     public void reserve() {
         if (status != Status.AVAILABLE) {
             throw new IllegalStateException("Only an AVAILABLE bag can be reserved.");
@@ -83,6 +92,7 @@ public class BloodBag {
         status = Status.RESERVED;
     }
 
+    /** Marks a reserved bag as given to a patient; only allowed while it's RESERVED. */
     public void markUsed() {
         if (status != Status.RESERVED) {
             throw new IllegalStateException("Only a RESERVED bag can be marked as used.");
@@ -90,6 +100,7 @@ public class BloodBag {
         status = Status.USED;
     }
 
+    /** Marks this bag as expired, e.g. once its shelf life has passed without being used. */
     public void markExpired() {
         status = Status.EXPIRED;
     }
@@ -109,6 +120,7 @@ public class BloodBag {
         }
     }
 
+    /** Formats this bag as a single readable line, used for quick debugging/console output. */
     @Override
     public String toString() {
         return String.format("[%s] %s | Donor: %s | Donated: %s | Expires: %s | Status: %s",
