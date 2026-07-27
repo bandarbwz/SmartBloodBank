@@ -14,9 +14,21 @@ import javafx.scene.layout.VBox;
 import java.util.List;
 import java.util.Map;
 
-/** Landing screen: at-a-glance KPIs, stock by blood type, and active alerts — all live from the service layer. */
+/**
+ * The first screen shown after logging in. It's a read-only overview:
+ * four summary numbers (total donors, total patients, available units,
+ * active alerts), a row of cards showing stock for each of the 8 blood
+ * types (colored normal/low/critical), and two lists — blood types
+ * running low, and blood bags about to expire. There are no buttons or
+ * actions here, just information. All the numbers come from
+ * BloodBank (donor/patient/stock counts) and InventoryManager
+ * (low-stock and near-expiry alerts).
+ *
+ * Landing screen: at-a-glance KPIs, stock by blood type, and active alerts — all live from the service layer.
+ */
 public class DashboardScreen extends Screen {
 
+    /** Builds the dashboard screen for the given shared app data. */
     public DashboardScreen(AppContext context, AppShell appShell) {
         super(context, appShell);
     }
