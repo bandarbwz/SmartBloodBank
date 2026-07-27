@@ -3,6 +3,7 @@ package com.smartbloodbank.ui;
 import com.smartbloodbank.model.Patient;
 import com.smartbloodbank.service.BloodBank;
 import com.smartbloodbank.service.BloodMatcher;
+import com.smartbloodbank.service.DemoDataSeeder;
 import com.smartbloodbank.service.EmergencyRequest;
 import com.smartbloodbank.service.FileManager;
 import com.smartbloodbank.service.InventoryManager;
@@ -42,14 +43,19 @@ public class AppContext {
     public void loadData() {
         try {
             fileManager.loadAll(bloodBank);
-            inventoryManager.updateExpiredBags();
-            for (Patient patient : bloodBank.getAllPatients()) {
-                if (!patient.isFulfilled()) {
-                    emergencyRequest.submitRequest(patient);
-                }
-            }
         } catch (IOException e) {
             System.err.println("Could not load saved data: " + e.getMessage());
+        }
+
+        if (bloodBank.getAllDonors().isEmpty() && bloodBank.getAllPatients().isEmpty()) {
+            new DemoDataSeeder().seed(bloodBank);
+        }
+
+        inventoryManager.updateExpiredBags();
+        for (Patient patient : bloodBank.getAllPatients()) {
+            if (!patient.isFulfilled()) {
+                emergencyRequest.submitRequest(patient);
+            }
         }
     }
 
