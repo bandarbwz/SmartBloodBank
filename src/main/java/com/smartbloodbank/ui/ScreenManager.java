@@ -5,6 +5,11 @@ import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 /**
+ * Controls the single application window and switches what's showing in
+ * it — either the Login screen, or the main app (sidebar + whichever
+ * screen the user picked). Think of it as the "remote control" for the
+ * window's content.
+ *
  * Owns the single primary Stage and decides which top-level scene is
  * showing: the Login screen, or the authenticated app shell (sidebar +
  * whichever screen is active).
@@ -22,6 +27,7 @@ public class ScreenManager {
     private final Stage stage;
     private final AppContext context;
 
+    /** Sets up the app window (title, minimum size, taskbar icon) and remembers it for later use. */
     public ScreenManager(Stage stage, AppContext context) {
         this.stage = stage;
         this.context = context;
@@ -31,16 +37,19 @@ public class ScreenManager {
         stage.getIcons().add(new Image(getClass().getResourceAsStream("images/logo.png")));
     }
 
+    /** Switches the window to show the Login screen. */
     public void showLogin() {
         LoginScreen loginScreen = new LoginScreen(this);
         setScene(loginScreen);
     }
 
+    /** Switches the window to show the main app shell, starting on the given screen, for the given signed-in user. */
     public void showApp(ScreenId initialScreen, String username) {
         AppShell appShell = new AppShell(this, context, initialScreen, username);
         setScene(appShell);
     }
 
+    /** Signs the user out by sending them back to the Login screen. */
     public void logout() {
         showLogin();
     }
