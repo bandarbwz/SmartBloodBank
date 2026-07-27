@@ -11,6 +11,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
+ * Fills a brand-new install with realistic-looking sample donors,
+ * patients and blood bags, so the app has something to show right away
+ * instead of opening on an empty screen. It only runs once, the very
+ * first time the app starts with no saved data yet.
+ *
  * Populates a fresh {@link BloodBank} with sample donors, patients and blood
  * bags so the app has data to demo immediately, instead of opening on an
  * empty inventory. Only meant to run once, on a brand-new install where no
@@ -95,6 +100,7 @@ public class DemoDataSeeder {
             new BagSeed(13, BloodType.B_NEGATIVE, 28)
     );
 
+    /** Adds all the sample donors, patients and blood bags to the given BloodBank. */
     public void seed(BloodBank bloodBank) {
         List<Donor> donors = seedDonors(bloodBank);
         seedPatients(bloodBank);
