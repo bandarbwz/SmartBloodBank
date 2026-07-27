@@ -1,7 +1,10 @@
 package com.smartbloodbank.model;
 
 /**
- * Priority level of a patient's blood request.
+ * How urgent a patient's blood request is, from LOW ("Routine") up to
+ * CRITICAL ("Life-threatening"). Patients are sorted so the most urgent
+ * ones are handled first, the same way a hospital would triage them.
+ *
  * The integer priority is used by BloodMatcher / EmergencyRequest
  * to sort requests (higher number = handled first).
  */
