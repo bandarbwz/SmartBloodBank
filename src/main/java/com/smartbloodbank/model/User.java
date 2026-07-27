@@ -3,6 +3,11 @@ package com.smartbloodbank.model;
 import java.time.LocalDate;
 
 /**
+ * Represents any person the system keeps track of. Right now that's
+ * Donors and Patients, and this class holds the details every person has
+ * in common — name, phone number, blood type, ID, registration date —
+ * so that shared information and shared rules only live in one place.
+ *
  * Abstract base class shared by every person known to the system
  * (Donor, Patient, and later Staff/Admin if needed).
  *
@@ -24,6 +29,7 @@ public abstract class User {
     private BloodType bloodType;
     private final LocalDate registrationDate;
 
+    /** Creates a brand-new person with a fresh auto-generated ID and today's date as the registration date. */
     protected User(String fullName, String contactNumber, BloodType bloodType) {
         this.id = "U" + (nextId++);
         setFullName(fullName);
@@ -51,6 +57,7 @@ public abstract class User {
         return fullName;
     }
 
+    /** Changes the person's name; rejects empty or blank input. */
     public void setFullName(String fullName) {
         if (fullName == null || fullName.isBlank()) {
             throw new IllegalArgumentException("Full name cannot be empty.");
@@ -62,6 +69,7 @@ public abstract class User {
         return contactNumber;
     }
 
+    /** Changes the person's phone number; rejects empty or blank input. */
     public void setContactNumber(String contactNumber) {
         if (contactNumber == null || contactNumber.isBlank()) {
             throw new IllegalArgumentException("Contact number cannot be empty.");
