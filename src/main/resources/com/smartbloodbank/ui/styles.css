@@ -1,0 +1,332 @@
+/*
+ * Shared stylesheet for every screen in the app. Centralising the palette
+ * and component styles here (instead of inline styling per screen) keeps
+ * the look consistent, the same idea as centralising domain rules in the
+ * model layer.
+ */
+
+.root {
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+    -fx-font-size: 13px;
+    -fx-background-color: #F4F6F9;
+}
+
+/* ---------- Layout shell ---------- */
+
+.app-shell {
+    -fx-background-color: #F4F6F9;
+}
+
+.sidebar {
+    -fx-background-color: #1E2430;
+    -fx-min-width: 220px;
+    -fx-pref-width: 220px;
+    -fx-padding: 0 0 16 0;
+}
+
+.sidebar .brand-box {
+    -fx-padding: 26 20 22 20;
+}
+
+.sidebar .brand-title {
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+}
+
+.sidebar .brand-subtitle {
+    -fx-text-fill: #8B93A7;
+    -fx-font-size: 11px;
+}
+
+.sidebar-button {
+    -fx-background-color: transparent;
+    -fx-text-fill: #B7BECD;
+    -fx-font-size: 13px;
+    -fx-alignment: CENTER_LEFT;
+    -fx-padding: 12 20 12 20;
+    -fx-background-radius: 0;
+    -fx-cursor: hand;
+    -fx-max-width: Infinity;
+}
+
+.sidebar-button:hover {
+    -fx-background-color: #2A3242;
+    -fx-text-fill: white;
+}
+
+.sidebar-button-active {
+    -fx-background-color: #C62828;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.sidebar-separator {
+    -fx-background-color: #323A4B;
+    -fx-min-height: 1px;
+    -fx-max-height: 1px;
+    -fx-margin: 8 0 8 0;
+}
+
+.top-bar {
+    -fx-background-color: white;
+    -fx-padding: 18 32 18 32;
+    -fx-border-color: transparent transparent #E4E7EC transparent;
+    -fx-border-width: 1;
+}
+
+.page-title {
+    -fx-font-size: 21px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B1F27;
+}
+
+.page-subtitle {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #6B7280;
+}
+
+.content-area {
+    -fx-background-color: #F4F6F9;
+    -fx-padding: 24 32 32 32;
+}
+
+/* ---------- Cards & stat tiles ---------- */
+
+.card {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #E5E8EE;
+    -fx-border-width: 1;
+    -fx-padding: 18;
+    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.06), 10, 0, 0, 2);
+}
+
+.card-title {
+    -fx-font-size: 15px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B1F27;
+}
+
+.stat-tile {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-radius: 10;
+    -fx-border-color: #E5E8EE;
+    -fx-border-width: 1;
+    -fx-padding: 16 18 16 18;
+    -fx-effect: dropshadow(gaussian, rgba(16,24,40,0.06), 10, 0, 0, 2);
+}
+
+.stat-tile-value {
+    -fx-font-size: 26px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B1F27;
+}
+
+.stat-tile-label {
+    -fx-font-size: 11.5px;
+    -fx-text-fill: #6B7280;
+    -fx-font-weight: bold;
+}
+
+.stat-tile-accent {
+    -fx-min-width: 6px;
+    -fx-max-width: 6px;
+    -fx-background-radius: 4;
+}
+
+.accent-red { -fx-background-color: #C62828; }
+.accent-blue { -fx-background-color: #2563EB; }
+.accent-amber { -fx-background-color: #ED6C02; }
+.accent-green { -fx-background-color: #2E7D32; }
+
+/* ---------- Buttons ---------- */
+
+.button-primary {
+    -fx-background-color: #C62828;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+
+.button-primary:hover {
+    -fx-background-color: #A81F1F;
+}
+
+.button-secondary {
+    -fx-background-color: #EEF0F4;
+    -fx-text-fill: #1B1F27;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-padding: 9 18 9 18;
+    -fx-cursor: hand;
+}
+
+.button-secondary:hover {
+    -fx-background-color: #E1E4EA;
+}
+
+.button-danger {
+    -fx-background-color: transparent;
+    -fx-text-fill: #C62828;
+    -fx-font-weight: bold;
+    -fx-background-radius: 6;
+    -fx-border-color: #C62828;
+    -fx-border-radius: 6;
+    -fx-padding: 8 17 8 17;
+    -fx-cursor: hand;
+}
+
+.button-danger:hover {
+    -fx-background-color: #FDEBEC;
+}
+
+/* ---------- Inputs ---------- */
+
+.text-field, .password-field, .combo-box, .date-picker, .text-area {
+    -fx-background-color: #FAFAFB;
+    -fx-background-radius: 6;
+    -fx-border-radius: 6;
+    -fx-border-color: #D8DCE3;
+    -fx-border-width: 1;
+    -fx-padding: 7 10 7 10;
+}
+
+.text-field:focused, .password-field:focused, .combo-box:focused, .date-picker:focused {
+    -fx-border-color: #C62828;
+}
+
+.form-label {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #3F4652;
+}
+
+/* ---------- Tables ---------- */
+
+.table-view {
+    -fx-background-color: white;
+    -fx-background-radius: 10;
+    -fx-border-color: #E5E8EE;
+    -fx-border-radius: 10;
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #F7F8FA;
+    -fx-background-radius: 10 10 0 0;
+}
+
+.table-view .column-header, .table-view .filler {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent transparent #E5E8EE transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: #6B7280;
+    -fx-font-weight: bold;
+    -fx-font-size: 11.5px;
+}
+
+.table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #F0F1F5 transparent;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #FBFBFC;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #FDEBEC;
+    -fx-text-fill: #1B1F27;
+}
+
+/* ---------- Status pills ---------- */
+
+.status-pill {
+    -fx-background-radius: 20;
+    -fx-padding: 3 12 3 12;
+    -fx-font-size: 11px;
+    -fx-font-weight: bold;
+}
+
+.status-pill-success {
+    -fx-background-color: #E7F5E8;
+    -fx-text-fill: #2E7D32;
+}
+
+.status-pill-warning {
+    -fx-background-color: #FCEEDC;
+    -fx-text-fill: #ED6C02;
+}
+
+.status-pill-danger {
+    -fx-background-color: #FDEBEC;
+    -fx-text-fill: #C62828;
+}
+
+.status-pill-neutral {
+    -fx-background-color: #EEF0F4;
+    -fx-text-fill: #4B5563;
+}
+
+/* ---------- Alert banners (Inventory alerts) ---------- */
+
+.alert-banner {
+    -fx-background-radius: 8;
+    -fx-border-radius: 8;
+    -fx-padding: 10 14 10 14;
+    -fx-font-size: 12.5px;
+}
+
+.alert-banner-warning {
+    -fx-background-color: #FCEEDC;
+    -fx-border-color: #F3C98C;
+    -fx-border-width: 1;
+    -fx-text-fill: #92400E;
+}
+
+.alert-banner-danger {
+    -fx-background-color: #FDEBEC;
+    -fx-border-color: #F0AEB0;
+    -fx-border-width: 1;
+    -fx-text-fill: #92161C;
+}
+
+.empty-state {
+    -fx-text-fill: #9AA1AF;
+    -fx-font-size: 12.5px;
+}
+
+/* ---------- Login screen ---------- */
+
+.login-root {
+    -fx-background-color: linear-gradient(to bottom right, #1E2430, #7A1616);
+}
+
+.login-card {
+    -fx-background-color: white;
+    -fx-background-radius: 14;
+    -fx-padding: 40;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.35), 30, 0, 0, 10);
+}
+
+.login-title {
+    -fx-font-size: 22px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #1B1F27;
+}
+
+.login-subtitle {
+    -fx-font-size: 12.5px;
+    -fx-text-fill: #6B7280;
+}
+
+.login-error {
+    -fx-text-fill: #C62828;
+    -fx-font-size: 12px;
+}
