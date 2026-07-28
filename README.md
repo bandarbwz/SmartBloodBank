@@ -16,17 +16,38 @@
 
 ---
 
+# Table of Contents
+
+- [Overview](#-overview)
+- [Features](#-features)
+- [Screenshots](#-screenshots)
+- [Architecture](#-architecture)
+- [System Design](#-system-design)
+- [Project Structure](#-project-structure)
+- [Application Startup](#-application-startup)
+- [Emergency Request Workflow](#-emergency-request-workflow)
+- [Object-Oriented Programming](#-object-oriented-programming)
+- [Technologies](#-technologies)
+- [Getting Started](#-getting-started)
+- [Demo Credentials](#-demo-credentials)
+- [Sustainable Development Goal](#-sustainable-development-goal)
+- [Author](#-author)
+
+---
+
 # Overview
 
-The **Smart Blood Bank Management System** is a JavaFX desktop application developed using Object-Oriented Programming principles. Unlike traditional CRUD-based systems, this project simulates real hospital blood bank operations by combining intelligent blood matching, emergency prioritization, inventory monitoring, expiry tracking, and persistent data storage.
+The **Smart Blood Bank Management System** is a JavaFX desktop application developed using Object-Oriented Programming principles.
+
+Unlike traditional CRUD-based systems, this project simulates real hospital blood bank operations by combining intelligent blood matching, emergency prioritization, inventory monitoring, expiry tracking, and persistent data storage.
 
 The project supports **United Nations Sustainable Development Goal 3 (Good Health and Well-being)** by demonstrating how software can improve blood bank efficiency and reduce delays during emergency situations.
 
 ---
 
-#  Features
+# Features
 
-##  Donor Management
+## Donor Management
 
 - Register new donors
 - Edit donor information
@@ -37,7 +58,7 @@ The project supports **United Nations Sustainable Development Goal 3 (Good Healt
 
 ---
 
-##  Patient Management
+## Patient Management
 
 - Register patients
 - Update patient information
@@ -48,7 +69,7 @@ The project supports **United Nations Sustainable Development Goal 3 (Good Healt
 
 ---
 
-##  Blood Inventory
+## Blood Inventory
 
 - Add blood bags
 - View inventory by blood type
@@ -65,7 +86,7 @@ Blood Bag Status:
 
 ---
 
-##  Intelligent Blood Matching
+## Intelligent Blood Matching
 
 The system automatically:
 
@@ -77,7 +98,7 @@ The system automatically:
 
 ---
 
-##  Emergency Priority Queue
+## Emergency Priority Queue
 
 Emergency requests are automatically sorted according to urgency:
 
@@ -90,7 +111,7 @@ The highest-priority patient is always processed first.
 
 ---
 
-##  Dashboard & Reports
+## Dashboard & Reports
 
 The dashboard provides:
 
@@ -104,7 +125,7 @@ The dashboard provides:
 
 ---
 
-##  Data Persistence
+## Data Persistence
 
 The application automatically:
 
@@ -114,7 +135,39 @@ The application automatically:
 
 ---
 
-#  Architecture
+# Screenshots
+
+## Login Screen
+
+![Login Screen](screenshots/login.png)
+
+---
+
+## Dashboard
+
+![Dashboard](screenshots/dashboard.png)
+
+---
+
+## Blood Inventory
+
+![Blood Inventory](screenshots/inventory.png)
+
+---
+
+## Emergency Requests
+
+![Emergency Requests](screenshots/emergency.png)
+
+---
+
+## Reports
+
+![Reports](screenshots/reports.png)
+
+---
+
+# Architecture
 
 ```text
                  JavaFX UI
@@ -122,19 +175,19 @@ The application automatically:
                      ▼
           ┌────────────────────┐
           │     UI Layer       │
-          │ JavaFX Screens      │
+          │ JavaFX Screens     │
           └─────────┬──────────┘
                     │
                     ▼
           ┌────────────────────┐
           │   Service Layer    │
-          │ Business Logic      │
+          │ Business Logic     │
           └─────────┬──────────┘
                     │
                     ▼
           ┌────────────────────┐
           │    Model Layer     │
-          │ Data & Rules        │
+          │ Data & Rules       │
           └────────────────────┘
 ```
 
@@ -146,7 +199,14 @@ The project follows a layered architecture where:
 
 ---
 
-#  Project Structure
+# System Design
+
+The following UML Class Diagram illustrates the object-oriented design of the application and the relationships between the main classes.
+
+![UML Class Diagram](designs/UML_Class_Diagram.png)
+
+---
+# Project Structure
 
 ```text
 src
@@ -189,7 +249,7 @@ src
 
 ---
 
-#  Application Startup
+# Application Startup
 
 ```text
 Application Starts
@@ -219,7 +279,7 @@ AppContext
 
 ---
 
-#  Emergency Request Workflow
+# Emergency Request Workflow
 
 ```text
 Patient Creates Request
@@ -248,7 +308,7 @@ Fulfill Patient Request
 
 ---
 
-#  Object-Oriented Programming
+# Object-Oriented Programming
 
 | Principle | Implementation |
 |-----------|----------------|
@@ -259,7 +319,7 @@ Fulfill Patient Request
 
 ---
 
-#  Technologies
+# Technologies
 
 - Java 21
 - JavaFX
@@ -273,17 +333,33 @@ Fulfill Patient Request
 
 # Getting Started
 
+## Prerequisites
+
+Before running the project, make sure the following software is installed:
+
+- Java Development Kit (JDK) 21
+- Apache Maven
+- JavaFX 21
+- IntelliJ IDEA (Recommended)
+- Git (Optional)
+
+---
+
 ## Clone the Repository
 
 ```bash
 git clone https://github.com/bandarbwz/SmartBloodBank.git
 ```
 
+---
+
 ## Navigate to the Project
 
 ```bash
 cd SmartBloodBank
 ```
+
+---
 
 ## Run the Application
 
@@ -304,9 +380,9 @@ Password : admin123
 
 # Sustainable Development Goal
 
-This project supports:
+## SDG 3: Good Health and Well being
 
-## SDG 3: Good Health and Well-being
+This project supports **United Nations Sustainable Development Goal 3 (Good Health and Well being)**.
 
 The system demonstrates how intelligent software can improve blood allocation, emergency response, and inventory management in healthcare environments.
 
@@ -314,4 +390,4 @@ The system demonstrates how intelligent software can improve blood allocation, e
 
 # Author
 
-Developed as an Object-Oriented Programming (OOP) course project using JavaFX, demonstrating software engineering principles, layered architecture, and healthcare management simulation.
+Developed as an Object Oriented Programming (OOP) course project using JavaFX, demonstrating software engineering principles, layered architecture, and healthcare management simulation.
