@@ -1,86 +1,317 @@
-# Smart Blood Bank Management System 
+# Smart Blood Bank Management System
 
-## 1. Overview
+> **An intelligent JavaFX desktop application that simulates real hospital blood bank operations with automatic blood matching, emergency prioritization, inventory monitoring, and persistent data management.**
 
-The Smart Blood Bank Management System is a JavaFX desktop application supporting **SDG 3 (Good Health and Well-being)**. It simulates real hospital blood bank operations: automatic blood-type matching, emergency prioritization, expiry tracking, and low-stock alerting — not a simple CRUD application.
-## 2. Demo Video 
-
-
-
-
-## 3. Architecture
-
-```
-ui\ux uses -> service/uses ->  model/
-(screens)  (business logic)  (data + rules)
-```
-| Layer | Responsibility | Classes |
-|---|---|---|
-| **model** | Data and rules for a single object | User, Donor, Patient, BloodBag, BloodType, EmergencyLevel |
-| **service** | Logic that works across the whole system | BloodBank, BloodMatcher, InventoryManager, EmergencyRequest, FileManager, DemoDataSeeder |
-| **ui** | Presentation only — no business logic | 8 JavaFX screens + shared infrastructure (AppContext, AppShell, ScreenManager, Screen, MainApp) |
-
-## 4. Application Startup Sequence
-
-1. `MainApp.start()` is the JavaFX entry point.
-2. It creates a single `AppContext`, which instantiates one shared copy of every service class. Every screen receives this same `AppContext`, so all screens read and write the same underlying data.
-3. `AppContext.loadData()` loads persisted data via `FileManager`. On a first run with no saved data, `DemoDataSeeder` populates realistic sample donors, patients, and blood bags.
-4. `ScreenManager` opens the window on the Login screen.
-5. On successful authentication, `ScreenManager.showApp()` builds the `AppShell` (sidebar + active screen).
-6. On application close, `MainApp.stop()` calls `AppContext.saveData()`.
-
-## 5. OOP Principles Applied
-
-| Principle | Implementation |
-|---|---|
-| **Encapsulation** | All model fields are private; `BloodBag` status transitions only through `reserve()` / `markUsed()` / `markExpired()`, never a public setter |
-| **Inheritance** | `User` → `Donor`, `Patient` |
-| **Polymorphism** | `Donor` and `Patient` override `displayInfo()`/`getRoleDescription()` differently; all 8 screens override `Screen`'s abstract methods differently |
-| **Abstraction** | `User` and `Screen` are abstract classes; `Patient` implements the `Comparable` interface |
-
-## 6. Module Reference
-
-### 6.1 model/
-
-| Class | Responsibility |
-|---|---|
-| `User` (abstract) | Shared identity fields (id, name, contact, blood type) for every person in the system |
-| `Donor` | Tracks donation history; enforces the 90-day minimum interval between donations |
-| `Patient` | Tracks blood request details; implements `Comparable` so a priority queue can sort patients by urgency with no external logic |
-| `BloodType` (enum) | The 8 blood types; encodes donor→recipient compatibility rules |
-| `EmergencyLevel` (enum) | Four urgency levels with numeric priority |
-| `BloodBag` | A single unit of blood; status changes only through controlled methods; auto-calculates its 42-day expiry |
-
-### 6.2 service/
-
-| Class | Responsibility |
-|---|---|
-| `BloodBank` | Single in-memory source of truth for all donors, patients, and blood bags |
-| `BloodMatcher` | Finds blood-type-compatible stock and reserves the soonest-to-expire bags first (FIFO) |
-| `InventoryManager` | Raises low-stock and near-expiry alerts by reading `BloodBank` |
-| `EmergencyRequest` | Priority queue of patients waiting for blood, ordered automatically by urgency |
-| `FileManager` | Persists all data to plain-text files and reloads it on startup |
-| `DemoDataSeeder` | Populates a fresh install with realistic sample data |
-
-### 6.3 ui/
-
-| Screen | Purpose |
-|---|---|
-| Login | Single demo-credential gate (`admin` / `admin123`) |
-| Dashboard | Read-only KPI overview: donor/patient counts, stock by type, active alerts |
-| Donor Management | Register/edit/delete donors; record donations |
-| Patient Management | Register/edit/delete patients; submit emergency requests |
-| Blood Inventory | View and manage all blood bags, grouped by type |
-| Emergency Requests | Priority-ordered queue; fulfill or remove requests |
-| Reports | Live statistics: donations over time, fulfillment rate, stock breakdown |
-| Settings | Manual save control; displays configured alert thresholds |
-
-## 7. Data Flow Example — Fulfilling an Emergency Request
-
-1. **UI:** `EmergencyRequestScreen` displays the queue from `EmergencyRequest.getPendingRequestsSorted()`.
-2. **Service:** the Fulfill action calls `BloodMatcher.matchAndReserve(patient)`, which filters `BloodBank`'s available stock to compatible types via `BloodType.canDonateTo()`, sorts by expiry date, and reserves the oldest matching bags.
-3. **Model:** each reserved `BloodBag` transitions `AVAILABLE → RESERVED → USED`; the `Patient` is marked fulfilled.
-4. **Service:** `EmergencyRequest.removeRequest()` removes the patient from the queue.
-5. **UI:** the screen refreshes to reflect the updated state.
+![Java](
+![JavaFX](https://img.shields.io/badge/JavaFX-Desktop-blue)
+![OOP](https://img.shields.io/badge/OOP-Full-green)
+![SDG 3](https://img.shields.io/badge/SDG-3-red)
 
 ---
+
+# Demo Video
+
+> **Watch the full project demonstration below**
+
+
+---
+
+# Overview
+
+The **Smart Blood Bank Management System** is a JavaFX desktop application developed using Object-Oriented Programming principles. Unlike traditional CRUD-based systems, this project simulates real hospital blood bank operations by combining intelligent blood matching, emergency prioritization, inventory monitoring, expiry tracking, and persistent data storage.
+
+The project supports **United Nations Sustainable Development Goal 3 (Good Health and Well-being)** by demonstrating how software can improve blood bank efficiency and reduce delays during emergency situations.
+
+---
+
+#  Features
+
+##  Donor Management
+
+- Register new donors
+- Edit donor information
+- Delete donor records
+- Record blood donations
+- Track donation history
+- Enforce the 90-day donation interval
+
+---
+
+##  Patient Management
+
+- Register patients
+- Update patient information
+- Delete patient records
+- Submit emergency blood requests
+- Track blood requirements
+- Mark fulfilled requests
+
+---
+
+##  Blood Inventory
+
+- Add blood bags
+- View inventory by blood type
+- Automatic expiry date calculation (42 days)
+- Track blood bag status
+- Organize inventory efficiently
+
+Blood Bag Status:
+
+- Available
+- Reserved
+- Used
+- Expired
+
+---
+
+##  Intelligent Blood Matching
+
+The system automatically:
+
+- Checks blood compatibility
+- Finds compatible blood bags
+- Selects the earliest expiring units (FIFO)
+- Reserves inventory automatically
+- Prevents incompatible transfusions
+
+---
+
+##  Emergency Priority Queue
+
+Emergency requests are automatically sorted according to urgency:
+
+1. Critical
+2. High
+3. Medium
+4. Low
+
+The highest-priority patient is always processed first.
+
+---
+
+##  Dashboard & Reports
+
+The dashboard provides:
+
+- Total donors
+- Total patients
+- Available blood units
+- Blood stock by type
+- Low-stock alerts
+- Near-expiry alerts
+- Fulfillment statistics
+
+---
+
+##  Data Persistence
+
+The application automatically:
+
+- Loads saved data on startup
+- Generates demo data on first launch
+- Saves all changes when the application closes
+
+---
+
+#  Architecture
+
+```text
+                 JavaFX UI
+                     │
+                     ▼
+          ┌────────────────────┐
+          │     UI Layer       │
+          │ JavaFX Screens      │
+          └─────────┬──────────┘
+                    │
+                    ▼
+          ┌────────────────────┐
+          │   Service Layer    │
+          │ Business Logic      │
+          └─────────┬──────────┘
+                    │
+                    ▼
+          ┌────────────────────┐
+          │    Model Layer     │
+          │ Data & Rules        │
+          └────────────────────┘
+```
+
+The project follows a layered architecture where:
+
+- **UI** handles presentation only.
+- **Service** contains all business logic.
+- **Model** represents the application's data and business rules.
+
+---
+
+#  Project Structure
+
+```text
+src
+└── main
+    └── java
+        └── com.smartbloodbank
+            ├── model
+            ├── service
+            └── ui
+```
+
+## Model
+
+- User
+- Donor
+- Patient
+- BloodBag
+- BloodType
+- EmergencyLevel
+
+## Service
+
+- BloodBank
+- BloodMatcher
+- InventoryManager
+- EmergencyRequest
+- FileManager
+- DemoDataSeeder
+
+## UI
+
+- Login
+- Dashboard
+- Donor Management
+- Patient Management
+- Blood Inventory
+- Emergency Requests
+- Reports
+- Settings
+
+---
+
+#  Application Startup
+
+```text
+Application Starts
+        │
+        ▼
+MainApp.start()
+        │
+        ▼
+AppContext
+        │
+        ├───────────────┐
+        │               │
+        ▼               ▼
+ Load Saved Data   Seed Demo Data
+        │
+        ▼
+ Login Screen
+        │
+ Authentication
+        │
+        ▼
+ Dashboard
+        │
+        ▼
+ System Modules
+```
+
+---
+
+#  Emergency Request Workflow
+
+```text
+Patient Creates Request
+          │
+          ▼
+Emergency Queue
+          │
+          ▼
+Priority Sorting
+          │
+          ▼
+BloodMatcher
+          │
+          ▼
+Compatibility Check
+          │
+          ▼
+Reserve Blood Bags
+          │
+          ▼
+Update Inventory
+          │
+          ▼
+Fulfill Patient Request
+```
+
+---
+
+#  Object-Oriented Programming
+
+| Principle | Implementation |
+|-----------|----------------|
+| Encapsulation | Private fields with controlled state transitions |
+| Inheritance | User → Donor, Patient |
+| Polymorphism | Different implementations of abstract methods |
+| Abstraction | Abstract User and Screen classes |
+
+---
+
+#  Technologies
+
+- Java 21
+- JavaFX
+- Maven
+- Object-Oriented Programming (OOP)
+- Collections Framework
+- Priority Queue
+- File-Based Persistence
+
+---
+
+# Getting Started
+
+## Clone the Repository
+
+```bash
+git clone https://github.com/bandarbwz/SmartBloodBank.git
+```
+
+## Navigate to the Project
+
+```bash
+cd SmartBloodBank
+```
+
+## Run the Application
+
+```bash
+mvn javafx:run
+```
+
+---
+
+# Demo Credentials
+
+```text
+Username : admin
+Password : admin123
+```
+
+---
+
+# Sustainable Development Goal
+
+This project supports:
+
+## SDG 3 — Good Health and Well-being
+
+The system demonstrates how intelligent software can improve blood allocation, emergency response, and inventory management in healthcare environments.
+
+---
+
+# Author
+
+Developed as an Object-Oriented Programming (OOP) course project using JavaFX, demonstrating software engineering principles, layered architecture, and healthcare management simulation.
