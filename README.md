@@ -2,7 +2,7 @@
 
 > **An intelligent JavaFX desktop application that simulates real hospital blood bank operations with automatic blood matching, emergency prioritization, inventory monitoring, and persistent data management.**
 
-![Java](
+![Java](https://img.shields.io/badge/Java-21-orange)
 ![JavaFX](https://img.shields.io/badge/JavaFX-Desktop-blue)
 ![OOP](https://img.shields.io/badge/OOP-Full-green)
 ![SDG 3](https://img.shields.io/badge/SDG-3-red)
@@ -306,7 +306,7 @@ Password : admin123
 
 This project supports:
 
-## SDG 3 — Good Health and Well-being
+## SDG 3: Good Health and Well-being
 
 The system demonstrates how intelligent software can improve blood allocation, emergency response, and inventory management in healthcare environments.
 
