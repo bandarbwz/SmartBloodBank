@@ -2,12 +2,16 @@ package com.smartbloodbank.ui;
 
 import javafx.geometry.Pos;
 import javafx.scene.Node;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
+import javafx.stage.Modality;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -49,6 +53,34 @@ public abstract class Screen extends BorderPane {
     /** Optional header-right action button(s), placed before the date; none by default. */
     protected Node buildHeaderActions() {
         return null;
+    }
+
+    /**
+     * Shows a simple OK-only information popup, e.g. a validation error or
+     * a confirmation like "not eligible to donate". Anchored to the main
+     * window via {@link #attachToOwner} so it opens as an in-app popup
+     * instead of a separate floating OS window.
+     */
+    protected void showInfo(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION, message, ButtonType.OK);
+        alert.setHeaderText(null);
+        attachToOwner(alert);
+        alert.showAndWait();
+    }
+
+    /**
+     * Anchors any Alert or Dialog to this screen's own window (its owner)
+     * and makes it window-modal, so it appears centered on top of the main
+     * app window and blocks interaction with it until dismissed — instead
+     * of popping up as a separate, disconnected window that steals focus.
+     * Call this right after creating any {@code new Alert(...)} or
+     * {@code new Dialog<>()}, before showing it.
+     */
+    protected void attachToOwner(Dialog<?> dialog) {
+        if (getScene() != null && getScene().getWindow() != null) {
+            dialog.initOwner(getScene().getWindow());
+            dialog.initModality(Modality.WINDOW_MODAL);
+        }
     }
 
     private Node buildHeader() {
