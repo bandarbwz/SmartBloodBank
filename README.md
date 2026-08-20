@@ -14,9 +14,9 @@
 
 # Demo Video
 
-**Click the image below to watch the full demo**
+**Click the link below to watch the full demo**
 
-[![Watch the Demo](YOUR_NEW_COVER_IMAGE_URL)](https://www.youtube.com/watch?v=__xKdD8HAb8)
+[Watch the Full Demo](https://www.youtube.com/watch?v=__xKdD8HAb8)
 
 # Table of Contents
 
