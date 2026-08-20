@@ -14,8 +14,8 @@
 
 # Demo Video
 
-[![Watch the Demo](https://img.youtube.com/vi/xKdD8HAb8/maxresdefault.jpg)](https://youtu.be/xKdD8HAb8)
-> 
+[[![Watch the Demo](https://img.youtube.com/vi/xKdD8HAb8/maxresdefault.jpg)](https://youtu.be/xKdD8HAb8)
+](https://youtu.be/__xKdD8HAb8)> 
 
 ---
 
