@@ -13,7 +13,8 @@
 ---
 
 # Demo Video
-https://youtu.be/__xKdD8HAb8
+
+[![Watch the Demo](https://img.youtube.com/vi/__xKdD8HAb8/0.jpg)](https://youtu.be/__xKdD8HAb8)
 
 # Table of Contents
 
