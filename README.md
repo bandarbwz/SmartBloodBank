@@ -1,4 +1,6 @@
 
+
+
 # Smart Blood Bank Management System
 
 > **An intelligent JavaFX desktop application that simulates real hospital blood bank operations with automatic blood matching, emergency prioritization, inventory monitoring, and persistent data management.**
@@ -13,7 +15,8 @@
 # Demo Video
 
 > **Watch the full project demonstration below**
-https://share.icloud.com/photos/062c8LSSjKWI8Ap_o0ZbsMpYg
+https://youtu.be/__xKdD8HAb8
+> 
 
 ---
 
